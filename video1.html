@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Video Mockup</title>
+    <link rel="stylesheet" type="text/css" href="./css/lp.css">
+    <script src="http://localhost/~georgepipkin/dgpath/lib/jquery_183.js"></script>
+    <script src="http://localhost/~georgepipkin/dgpath/lib/i18next-1.7.4.min.js" ></script>
+</head>
+<body>
+    <div class="docComponent" id="videoInfo">
+        <div class="componentTypeLabel" id="videoComponentTypeLabel">
+            Video Component:
+        </div>
+        <div class="componentTitleLabel" id = "videoComponentLabel">
+            Component Label:
+                <input type="text" size="40" maxlength="60" />
+        </div>
+        <div class="componentTitleLabel" >
+            <span id="videoTitleLabel">Video Title:</span><span style="color: red;" id="videoTitle"></span>
+        </div>
+        <div class="componentTitleLabel"  >
+            <table>
+                <tr>
+                    <td>
+                        <div>
+                            <div class="componentTitleLabel" id="descriptionLabel">
+                                Description:
+                            </div>
+                            <div style="background-color: #cccccc; height: 175px; width: 400px;" id="videoDescription" >
+
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="margin-left: 100px;">
+                            <div class="componentTitleLabel" id="thumbnailLabel">
+                                <span id="thumbNailLabel">Thumbnail:</span>
+                            </div>
+                            <div style="background-color: #cccccc; height: 175px; width: 200px;" >
+                                <img src="images/blankThumbnail.jpg" height="175px" width="200px" id = "videoThumbnail"/>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="componentTitleLabel"  >
+            <span id="startLabel">Start:</span>
+            <input type="radio" name="startOption" value="startAtBegining" id="radioStartBegining"/>
+            <span id = "atBeginingLabel">(at begining)</span>
+            <input type="radio" name="startOption" value="startIntoClip" id="radioStartIntoClip"/>
+            <span id="intoClipLabel">(into the clip):</span>
+            <input type="text" size="5" maxlength="5" id="textStartIntoClip"/>
+            <span id="secondsLabel"> seconds</span>
+        </div>
+        <div class="componentTitleLabel"  >
+            <span id="endLabel">End:</span>
+            <input type="radio" name="endOption" value="endAtEnd" id="radioEndAtEnd"/>
+            <span id="atEndLabel">(at end)</span>
+            <input type="radio" name="endOption" value="endIntoClip" id="radioEndInClip"/>
+            <span id="secondsToRunLabel">(seconds to run):</span>
+            <input type="text" size="5" maxlength="5" id="textEndIntoClip"/>
+            <span id="secondsLabel">seconds</span>
+        </div>
+        <div class="componentTitleLabel"  style="top:10px;">
+            <input type="button" value="Find Video" id="buttonFindVideo"/>
+            <span id="onLabel">On:</span>
+            <select id="sourceSelect">
+                <option value="notSelected" id="optionNotSelected">Not Selected</option>
+                <option value="youtube" label="YouTube" id="optionYouTube">YouTube</option>
+                <option value="kaltura" label="Kaltura" id="optionKaltura">Kaltura</option>
+                <option value="khan" label="Khan Academy" id="optionKahn">Khan Academy</option>
+            </select>
+            <input type="button" value="Upload Video" id="buttonUploadVideo"/>
+            <input type="button" value="Edit This Video Component" id="buttonEditThisVideoComponent"/>
+            <input type="button" value="Save" id="buttonSave" />
+            <input type="button" value="Cancel" id="buttonCancel"/>
+        </div>
+    </div>
+
+
+</body>
+</html>

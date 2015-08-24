@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ToolBar Test</title>
+    <script>
+//        var toolIcons = ["event_icon","multichoice","numeric","truefalse","video"];
+        var toolIcons = [];
+        var toolListener;
+        var controlIcons = [];
+        var currentComponents = [];
+        var connections = [];
+        var param1Val = '2';
+        var urlBase = "http://localhost/~georgepipkin/dgpath/";
+        var STATE_NOT_WAITING_FOR_ANYTHING = 0;
+        var STATE_DRAGGING_NEW_COMPONENT = 1;
+        var STATE_WAITING_FOR_PATH_START = 2;
+        var STATE_WAITING_FOR_PATH_END = 3;
+        var eatNextClick = false;
+        var currentState =  STATE_NOT_WAITING_FOR_ANYTHING;
+
+    </script>
+    <link rel="stylesheet" type="text/css" href="./css/lp.css">
+    <script src="http://localhost/~georgepipkin/dgpath/lib/jquery_183.js"></script>
+    <script src="http://localhost/~georgepipkin/dgpath/lib/jcanvas.js"></script>
+    <script src="http://localhost/~georgepipkin/dgpath/ckeditor/ckeditor.js"></script>
+    <script src="http://localhost/~georgepipkin/dgpath/lib/component.js"></script>
+    <script src="http://localhost/~georgepipkin/dgpath/lib/doc.js"></script>
+    <script src="http://localhost/~georgepipkin/dgpath/lib/entry_door.js"></script>
+    <script src="http://localhost/~georgepipkin/dgpath/lib/exit_door.js"></script>
+    <script src="http://localhost/~georgepipkin/dgpath/lib/subcontext.js"></script>
+    <script src="http://localhost/~georgepipkin/dgpath/lib/toolbar2.js"></script>
+    <script src="http://localhost/~georgepipkin/dgpath/lib/chooser_old.js"></script>
+    <script src="http://localhost/~georgepipkin/dgpath/lib/transactions_php.js"></script>
+    <script src="http://localhost/~georgepipkin/dgpath/lib/constants.js"></script>
+    <script src="http://localhost/~georgepipkin/dgpath/lib/dgConnection.js"></script>
+    <script src="http://localhost/~georgepipkin/dgpath/lib/dgEvent.js"></script>
+    <script src="http://localhost/~georgepipkin/dgpath/lib/truefalse.js"></script>
+    <script>
+
+        var cwidth;
+        var cheight;
+        $(document).ready(function() {
+            ctx = $("#myCanvas")[0].getContext('2d');
+            ctx.canvas.width  = window.innerWidth;
+            cwidth = window.innerWidth;
+            ctx.canvas.height = window.innerHeight;
+            cheight =  window.innerHeight;
+            $("#projectContextStackLabels").val('');
+            $("#projectContextStack").val('');
+            drawToolbar();
+            makeContextBar();
+            setupChooser(gpp8p_project_context);
+
+        });
+    </script>
+</head>
+<body>
+<canvas id="myCanvas"  style="border:1px
+       solid black;">
+</canvas>
+<div id="popup">
+</div>
+<div id="contextBar" class="ctxBar">
+
+</div>
+<input id="componentContext" name="componentContext" hidden="true" />
+<input id="clickStatus" name="clickStatus" hidden="true" value="0"/>
+<input id="newPathStart" name="newPathStart" hidden="true" value="0"/>
+<input id="currentProjectId" name="currentProjectId" hidden="true"/>
+<input id="projectContextStack" name="projectContextStack" hidden="true"/>
+<input id="projectContextStackLabels" name="projectContextStackLabels" hidden="true" />
+<input id="subContext" name="subContext" hidden="true" />
+
+</body>
+</html>

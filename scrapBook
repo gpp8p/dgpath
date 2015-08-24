@@ -1,0 +1,22 @@
+transaction to clone sub-context
+
+            var myData;
+            myData = {subcontext: thisSubcontext};
+            $.ajax({
+                type: "POST",
+                url: thisTransaction,
+                data: myData,
+                success: function (msg) {
+                    var subContextTree = JSON.parse(msg);
+                    console.log('subcontext query successful');
+                },
+                error: function (err) {
+                    alert(err.toString());
+                    if (err.status == 200) {
+                        ParseResult(err);
+                    }
+                    else {
+                        alert('Error:' + err.responseText + '  Status: ' + err.status);
+                    }
+                }
+            });

@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Drawing Units="px" PPU="1" Major="100" Subdivisions="10" ActiveLayer="1" PrintSize="8.5,11">
+  <Layer Name="Layer 1" Visible="True" Locked="False">
+    <RoundedRectangle X="300" Y="270" Width="170" Height="30" FillColor="#FFC509" ShadowVisible="True" ShadowOffsetX="5" ShadowOffsetY="5" ShadowBlur="5" ShadowColor="#000000,0.5" CornerRadius="8.25" />
+  </Layer>
+  <Layer Name="Layer 2" Visible="True" Locked="False">
+    <Text X="308" Y="269" Width="150" Height="30" Filled="False" Stroked="False" Text="Submit Answer" FontSize="16" FontColor="#0D1EFF" FontName="Futura-Medium" />
+  </Layer>
+</Drawing>

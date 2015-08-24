@@ -1,0 +1,31 @@
+html, body {
+    width:  100%;
+    height: 100%;
+    margin: 0px;
+    background-color: #caf0ff;
+}
+
+ul
+{
+    list-style-type: none;
+    padding: 0;
+    margin: 0 1em;
+}
+
+li
+{
+    background-image: url(../images/openplus.png);
+    background-repeat: no-repeat;
+    background-position: 0 0em;
+    border-radius: 5px 5px 5px 5px;
+    margin: 0.1em 0;
+    padding-left: 1.5em;
+    display: block;
+    color: #000000;
+    background-color: rgba(83, 46, 67, 0.25);
+    font-size:18px;
+    font-weight:bold;
+    font-family: "Arial";
+    text-align: left;
+
+}

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Entry Door Mockup</title>
+    <link rel="stylesheet" type="text/css" href="./css/lp.css">
+    <script src="http://localhost/~georgepipkin/dgpath/lib/jquery_183.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#contextLabel").html("Entrance to:");
+            $("#contextName").html("This project");
+            $("#accessLabel").html("Access:");
+            $("#internalAccessLabel").html("Access only from other components in this project");
+            $("#selectInternalAccess").bind( "click", function() {
+                $("#accessType").val("internal");
+                $("#urlValue").css( "color", "#bbbbbb" );
+                $("#ltiKey").prop('disabled', true);
+                $("#ltiSecret").prop('disabled', true);
+                $("#ltiKeyLabel").css( "color", "#bbbbbb" );
+                $("#ltiSecretLabel").css( "color", "#bbbbbb" );
+                $("#urlLabel").css( "color", "#bbbbbb" );
+            });
+            $("#externalAccessLabel").html("Access using a login or LTI");
+            $("#selectExternalAccess").bind( "click", function() {
+                $("#accessType").val("external");
+                $("#urlValue").css( "color", "red" );
+                $("#ltiKey").prop('disabled', false);
+                $("#ltiSecret").prop('disabled', false);
+                $("#ltiKeyLabel").css( "color", "black" );
+                $("#ltiSecretLabel").css( "color", "black" );
+                $("#urlLabel").css( "color", "black" );
+
+            });
+            $("#bothAccessLabel").html("Access internally or externally (login or LTI)");
+            $("#selectBothAccess").bind( "click", function() {
+                $("#accessType").val("both");
+                $("#urlValue").css( "color", "red" );
+                $("#ltiKey").prop('disabled', false);
+                $("#ltiSecret").prop('disabled', false);
+                $("#ltiKeyLabel").css( "color", "black" );
+                $("#ltiSecretLabel").css( "color", "black" );
+                $("#urlLabel").css( "color", "black" );
+            });
+            $("#urlLabel").html("Access URL :");
+            $("#urlValue").html("http://dgpath.com/project");
+            $("#ltiKeyLabel").html("LTI Key:");
+            $("#ltiSecretLabel").html("LTI Secret:");
+            $("#selectInternalAccess").prop('checked', true);
+            $("#selectExternalAccess").prop('checked', false);
+            $("#selectBothAccess").prop('checked', false);
+            $("#accessType").val("internal");
+            $("#urlValue").css( "color", "#bbbbbb" );
+            $("#ltiKey").prop('disabled', true);
+            $("#ltiSecret").prop('disabled', true);
+            $("#ltiKeyLabel").css( "color", "#bbbbbb" );
+            $("#ltiSecretLabel").css( "color", "#bbbbbb" );
+            $("#urlLabel").css( "color", "#bbbbbb" );
+
+
+
+        });
+
+    </script>
+</head>
+<body>
+    <div id="componentEdit" class="doorComponent">
+        <table>
+            <tr>
+                <td width="100%" colspan="4">
+                    <span class="hdr3" id="contextLabel"></span><span class="hdr4" id="contextName"></span>
+                </td>
+             </tr>
+            <tr>
+                <td width="20%" colspan="1">
+                    <span class="hdr3" id="accessLabel"></span>
+                </td>
+                <td width="10%" colspan = "1">
+                    <input type="radio" value="internal" id="selectInternalAccess"  name="selectAccess" />
+                </td>
+                <td width="70%" colspan="2">
+                    <span class="hdr12" id="internalAccessLabel"></span>
+                </td>
+            </tr>
+            <tr>
+                <td width="20%" colspan="1">
+
+                </td>
+                <td width="10%" colspan = "1">
+                    <input type="radio" value="external" id="selectExternalAccess"  name="selectAccess" />
+                </td>
+                <td width="70%" colspan="2">
+                    <span class="hdr12" id="externalAccessLabel"></span>
+                </td>
+            </tr>
+            <tr>
+                <td width="20%" colspan="1">
+
+                </td>
+                <td width="10%" colspan = "1">
+                    <input type="radio" value="both" id="selectBothAccess"  name="selectAccess" />
+                </td>
+                <td width="70%" colspan="2">
+                    <span class="hdr12" id="bothAccessLabel"></span>
+                </td>
+            </tr>
+            <tr>
+                <td width="30%" colspan="1">
+
+                </td>
+                <td width="70%" colspan="3">
+                    <span class="hdr12" id="urlLabel"></span><span class="hdr13" id="urlValue"></span>
+                </td>
+            </tr>
+            <tr>
+                <td width="30%" colspan="1">
+
+                </td>
+                <td width="70%" colspan="3">
+                    <span class="hdr12" id="ltiKeyLabel"></span><span class="hdr13" id="ltiKeySpan"><input type="text" id="ltiKey" name="ltiKey" size="20" maxlength="40" /></span>
+                </td>
+            </tr>
+            <tr>
+                <td width="30%" colspan="1">
+
+                </td>
+                <td width="70%" colspan="3">
+                    <span class="hdr12" id="ltiSecretLabel"></span><span class="hdr13" id="urlSecretSpan"><input type="text" id="ltiSecret" name="ltiSecret" size="20" maxlength="40" /></span>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+    <input type="hidden" id="accessType" name="accessType" />
+</body>
+</html>

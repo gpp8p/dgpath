@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <table border="0" width="800px">
+        <tr>
+            <td width="25%" id="titleLabel" align="right"></td>
+            <td width="75%" align="left"><input id="title" type="text" size="50"></td>
+        </tr>
+        <tr>
+            <td width="25%" id="descriptionLabel" align="right"></td>
+            <td width="75%" align="left"><textarea id="description" rows="5" cols="80"></textarea></td>
+        </tr>
+        <tr>
+            <td width="25%" id="privacyStatusLabel" align="right"></td>
+            <td width="75%" align="left"><select id="privacy-status"></select></td>
+        </tr>
+    </table>
+    <div>
+        <input input type="file" id="file" class="button" accept="video/*">
+        <button id="button"></button>
+        <div class="during-upload">
+            <p><span id="percent-transferred"></span><span id="percentDoneLabel"></span>(<span id="bytes-transferred"></span>/<span id="total-bytes"></span> <span id="bytesLabel"></span>)</p>
+            <progress id="upload-progress" max="1" value="0"></progress>
+        </div>
+
+        <div class="post-upload">
+            <p><span id="uploadedVideoIdLabel"></span><span id="video-id"></span>.<span id="pollingForStatusLabel" ></span></p>
+            <ul id="post-upload-status"></ul>
+        </div>
+        <p id="disclaimer"><span id="disclaimerLabel"></span><a href="http://www.youtube.com/t/terms" target="_blank">http://www.youtube.com/t/terms</a></p>
+    </div>
+
+</body>
+</html>

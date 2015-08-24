@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>List Test</title>
+    <link rel="stylesheet" type="text/css" href="./css/lpTest.css">
+    <link rel="stylesheet" type="text/css" href="./css/jquery-ui.css">
+    <script src="http://localhost/~georgepipkin/dgpath/lib/jquery_183.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#o1").hide();
+            $("#ox1").on("click", function(){
+                $("#o1").toggle();
+            });
+        });
+    </script>
+
+</head>
+<body>
+<div id = "navcontainer">
+<ul>
+    <li>Milk</li>
+    <li>Eggs</li>
+    <li id="ox1">Open me here</li>
+    <div id="o1">
+        <ul>
+            <li>indent1</li>
+            <li>indent2</li>
+        </ul>
+    </div>
+    <li>Cheese</li>
+    <li>Vegetables</li>
+    <li>Fruit</li>
+</ul>
+</div>
+</body>
+</html>

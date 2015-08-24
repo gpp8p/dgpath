@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>header test</title>
+    <link rel="stylesheet" type="text/css" href="./css/lp.css">
+    <script src="http://localhost/~georgepipkin/dgpath/lib/jquery_183.js"></script>
+    <script>
+        $(document).ready(function() {
+            cwidth = window.innerWidth;
+            noTabWidth=cwidth-560;
+            $("#noTabPart").attr("width", noTabWidth);
+            $("#tabPart").attr("width", 560);
+            $("#studioTab").on("click", function(){
+                $("#studioTab").removeClass("studioTabClassInactive");
+                $("#studioTab").addClass("studioTabClassActive");
+                $("#previewTab").removeClass("previewTabClassActive");
+                $("#previewTab").addClass("previewTabClassInactive");
+                $("#dashboardTab").removeClass("dashboardTabClassActive");
+                $("#dashboardTab").addClass("dashboardTabClassInactive");
+                $("#libraryTab").removeClass("libraryTabClassActive");
+                $("#libraryTab").addClass("libraryTabClassInactive");
+            });
+            $("#previewTab").on("click", function(){
+                $("#studioTab").removeClass("studioTabClassActive");
+                $("#studioTab").addClass("studioTabClassInactive");
+                $("#previewTab").removeClass("previewTabClassInactive");
+                $("#previewTab").addClass("previewTabClassActive");
+                $("#dashboardTab").removeClass("dashboardTabClassActive");
+                $("#dashboardTab").addClass("dashboardTabClassInactive");
+                $("#libraryTab").removeClass("libraryTabClassActive");
+                $("#libraryTab").addClass("libraryTabClassInactive");
+            });
+            $("#dashboardTab").on("click", function(){
+                $("#studioTab").removeClass("studioTabClassActive");
+                $("#studioTab").addClass("studioTabClassInactive");
+                $("#previewTab").removeClass("previewTabClassActive");
+                $("#previewTab").addClass("previewTabClassInactive");
+                $("#dashboardTab").removeClass("dashboardTabClassInactive");
+                $("#dashboardTab").addClass("dashboardTabClassActive");
+                $("#libraryTab").removeClass("libraryTabClassActive");
+                $("#libraryTab").addClass("libraryTabClassInactive");
+            });
+            $("#libraryTab").on("click", function(){
+                $("#studioTab").removeClass("studioTabClassActive");
+                $("#studioTab").addClass("studioTabClassInactive");
+                $("#previewTab").removeClass("previewTabClassActive");
+                $("#previewTab").addClass("previewTabClassInactive");
+                $("#dashboardTab").removeClass("dashboardTabClassActive");
+                $("#dashboardTab").addClass("dashboardTabClassInactive");
+                $("#libraryTab").removeClass("libraryTabClassInactive");
+                $("#libraryTab").addClass("libraryTabClassActive");
+            });
+        });
+
+    </script>
+
+</head>
+<body>
+<table width="100%" border="0">
+<tr>
+    <td id = "noTabPart"  align="right" class="bottomLine" class="bottomLine"></td>
+    <td id = "tabPart"  align="right">
+        <div class="tabTable">
+            <table border="0">
+                <tr>
+                    <td width="140px" height="42px" id="studioTab" class="studioTabClassActive">
+
+                    </td>
+                    <td width="140px" height="42px" id="previewTab" class="previewTabClassInactive">
+
+                    </td>
+                    <td width="140px" height="42px" id="dashboardTab" class="dashboardTabClassInactive">
+
+                    </td>
+                    <td width="140px" height="42px" id="libraryTab" class="libraryTabClassInactive">
+
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </td>
+</tr>
+</table>
+
+</body>
+</html>

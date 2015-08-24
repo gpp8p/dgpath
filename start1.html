@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ToolBar Test</title>
+    <script>
+        //        var toolIcons = ["event_icon","multichoice","numeric","truefalse","video"];
+        var toolIcons = [];
+        var toolListener;
+        var controlIcons = [];
+        var controlFunctions = [];
+        var currentComponents = [];
+        var connections = [];
+        var param1Val = '2';
+        var getUrl = window.location;
+        var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+        console.log('baseUrl is:'+baseUrl);
+//        var urlBase = "http://localhost/~georgepipkin/dgpath/";
+        var urlBase = baseUrl+"/dgpath/";
+        var readerFunctions = [];
+        var STATE_NOT_WAITING_FOR_ANYTHING = 0;
+        var STATE_DRAGGING_NEW_COMPONENT = 1;
+        var STATE_WAITING_FOR_PATH_START = 2;
+        var STATE_WAITING_FOR_PATH_END = 3;
+        var eatNextClick = false;
+        var currentState =  STATE_NOT_WAITING_FOR_ANYTHING;
+
+    </script>
+    <link rel="stylesheet" type="text/css" href="./css/lp.css">
+    <link rel="stylesheet" type="text/css" href="./css/jquery-ui.css">
+    <script src="./lib/jquery_183.js"></script>
+    <script src="./lib/i18next-1.7.4.min.js" ></script>
+    <script src="./lib/jcanvas.js"></script>
+    <script src="./ckeditor/ckeditor.js"></script>
+    <script src="./lib/jquery-ui.min.js"></script>
+    <script src="./lib/component.js"></script>
+    <script src="./lib/doc.js"></script>
+    <script src="./lib/entry_door.js"></script>
+    <script src="./lib/exit_door.js"></script>
+    <script src="./lib/subcontext.js"></script>
+    <script src="./lib/toolbar2.js"></script>
+    <script src="./lib/chooser.js"></script>
+    <script src="./lib/transactions_mysqli_php.js"></script>
+    <script src="./lib/constants.js"></script>
+    <script src="./lib/dgConnection.js"></script>
+    <script src="./lib/dgEvent.js"></script>
+    <script src="./lib/truefalse.js"></script>
+    <script src="./lib/loginPopup.js"></script>
+    <script src="./lib/fib.js"></script>
+    <script src="./lib/evtypes.js"></script>
+    <script src="./lib/multichoice.js"></script>
+    <script src="./lib/contentArea.js"></script>
+    <script src="./lib/navButton.js"></script>
+    <script src="./lib/userEvent.js"></script>
+    <script src="./lib/libraryArea.js"></script>
+    <script src="./lib/collection.js"></script>
+    <script src="./lib/folder.js"></script>
+    <script src="./lib/youtubeVideoSource.js"></script>
+    <script src="./lib/video.js"></script>
+    <script src="./lib/youTubePlayer.js"></script>
+    <script src="https://apis.google.com/js/client:platform.js" async defer></script>
+    <script src="http://localhost/~georgepipkin/dgpath/lib/cors_upload.js"></script>
+    <script src="http://localhost/~georgepipkin/dgpath/lib/upload_video.js"></script>
+
+
+    <script src="./lib/my_uploads1.js"></script>
+    <script src="./lib/vObj.js"></script>
+
+
+
+
+    <script>
+
+        var cwidth;
+        var cheight;
+
+        var tbX = 30;
+        var tbY = 30;
+        var tbHeight = 70;
+        var tbWidth;
+        var tbIncrement = 60;
+        var componentHeight = 50;
+        var componentWidth = 50;
+        var inContextNow;
+        var thisChromeVideoObj;
+        window.ytapiLoaded = false;
+        var isOpera ;
+        var isFirefox;
+        var isSafari;
+        var isChrome;
+        var isIE;
+
+
+
+        $(document).ready(function() {
+            $.i18n.init({ lng: "en" });
+            ctx = $("#myCanvas")[0].getContext('2d');
+            ctx.canvas.width  = window.innerWidth;
+            ctx.canvas.height = window.innerHeight-50;
+//            ctx.canvas.width = 1200;
+//            ctx.canvas.height = 700;
+            cwidth = window.innerWidth;
+            noTabWidth=cwidth-560;
+            $("#noTabPart").attr("width", noTabWidth);
+            $("#tabPart").attr("width", 560);
+            $("#studioTab").on("click", function(){
+                selectStudioTab();
+            });
+            $("#previewTab").on("click", function(){
+                selectPreviewTab();
+            });
+            $("#dashboardTab").on("click", function(){
+                selectDashboardTab()
+            });
+            thisChromeVideoObj = new vObj();
+            $("#showVpop").on("click", function(){
+                thisChromeVideoObj.contentEntry(200,200,200,'testPopup',200);
+            });
+            $("#doAuth").on("click", function(){
+                thisChromeVideoObj.doCheckAuth();
+            });
+
+            $("#libraryTab").on("click", function(){
+                selectLibraryTab();
+            });
+            cheight =  window.innerHeight-50;
+            $('#myCanvas').css('background-color', '#CDD4F7');
+            $("#projectContextStackLabels").val('');
+            $("#projectContextStack").val('');
+//            $("#contextBar").hide();
+            $("#popup").hide();
+            $("#alertPopup").hide();
+            $("#tabHeader").hide();
+            $("#previewDiv").hide();
+            isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+            isFirefox = typeof InstallTrigger !== 'undefined';   // Firefox 1.0+
+            isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
+            isChrome = !!window.chrome && !isOpera;              // Chrome 1+
+            isIE = /*@cc_on!@*/false || !!document.documentMode;   // At least IE6
+            var thisPopup = new loginPopup();
+
+            window.player;
+            var tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            var firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            window.onYouTubeIframeAPIReady=function() {
+                window.youtube_api_init=true;
+            }
+
+            thisPopup.entry();
+
+        });
+    </script>
+</head>
+<body>
+<div id="tabHeader" class="backgroundGrey">
+    <table width="100%" border="0">
+        <tr>
+            <td id = "noTabPart"  align="right" class="bottomLine" class="bottomLine">
+                <div id="contextLine" class="contextLine">
+                </div>
+                <div id="libraryContextLine" class="contextLine">
+                </div>
+            </td>
+            <td id = "tabPart"  align="right">
+                <div class="tabTable">
+                    <table border="0">
+                        <tr>
+                            <td width="140px" height="42px" id="studioTab" class="studioTabClassActive">
+                                <div class="tabStyle" id="studioTabContent">
+
+                                </div>
+                            </td>
+                            <td width="140px" height="42px" id="previewTab" class="previewTabClassInactive">
+                                <div class="tabStyle" id="previewTabContent">
+
+                                </div>
+                            </td>
+                            <td width="140px" height="42px" id="dashboardTab" class="dashboardTabClassInactive">
+                                <div class="tabStyle" id="dashboardTabContent">
+
+                                </div>
+                            </td>
+                            <td width="140px" height="42px" id="libraryTab" class="libraryTabClassInactive">
+                                <div class="tabStyle" id="libraryTabContent">
+
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="canvasCss" id="studioDiv">
+    <canvas id="myCanvas"  >
+    </canvas>
+</div>
+<div id="popup" class="popupCss">
+</div>
+<div id ="popup2" class = "popupCss">
+</div>
+<div id ="popup2_videoPlayer" class = "popupCss">
+</div>
+<div id="libPopup" class="popupCss">
+</div>
+<div id="popup3">
+</div>
+<div id="alertPopup" class="alertCss">
+</div>
+<div id="previewDiv" class="previewDivCss">
+    <div id = "navButton" class="navButtonCss">
+        <img src="images/nextArrow.png" id="navButtomImg" />
+    </div>
+    <div id="contentArea" class="contentAreaCss">
+
+    </div>
+</div>
+<div id="libraryDiv" class="libraryDivCss">
+    <div id="libraryMapArea">
+        <canvas id="libraryMapCanvas"  >
+        </canvas>
+    </div>
+    <div id="libraryControlArea">
+
+    </div>
+    <div id="libraryListArea">
+        <div id = "libraryList" border="0" class="libraryListCss">
+
+        </div>
+    </div>
+
+</div>
+<input id="componentContext" name="componentContext" hidden="true" />
+<input id="clickStatus" name="clickStatus" hidden="true" value="0"/>
+<input id="newPathStart" name="newPathStart" hidden="true" value="0"/>
+<input id="currentProjectId" name="currentProjectId" hidden="true"/>
+<input id="projectContextStack" name="projectContextStack" hidden="true"/>
+<input id="projectContextStackLabels" name="projectContextStackLabels" hidden="true" />
+<input id="subContext" name="subContext" hidden="true" />
+<input id="reLoadContext" name="reLoadContext" hidden="true" />
+<input id="libraryLocation" name="libraryLocation" hidden="true" />
+<input id="saveContext" name="saveContext" hidden="true" />
+<input id="thisUserEid" name="thisUserEid" hidden="true" />
+<input id="clipboard" name="clipboard" hidden="true" value="48"/>
+
+</body>
+</html>

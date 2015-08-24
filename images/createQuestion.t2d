@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Drawing Units="px" PPU="1" Major="100" Subdivisions="10" ViewPositionX="32.5" ViewPositionY="61.5" ActiveLayer="1" PrintSize="8.5,11">
+  <Layer Name="Layer 1" Visible="True" Locked="False">
+    <RoundedRectangle X="200" Y="200" Width="250" Height="20" FillColor="#00FFFF" ShadowVisible="True" ShadowOffsetX="5" ShadowOffsetY="5" ShadowBlur="5" ShadowColor="#000000,0.5" CornerRadius="4.25" />
+  </Layer>
+  <Layer Name="Layer 2" Visible="True" Locked="False">
+    <Text X="196" Y="190" Width="255" Height="40" Filled="False" Stroked="False" Text="Create Multiple-Choice Question" FontSize="14" FontName="Arial-BoldMT" />
+  </Layer>
+</Drawing>
