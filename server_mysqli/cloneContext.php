@@ -42,12 +42,7 @@ $globalResult = traverseContext($componentQueryMin, $connectionQuery, $link, $tr
 $returnDataJson = json_encode($globalResult);
 echo($returnDataJson);
 
-/*
-foreach($traversalResults as $thisTraversalResult){
-    $contextComponents = $thisTraversalResult[0];
-    $contextConnections = $thisTraversalResult[0];
-}
-*/
+
 
 
 function traverseContext($componentQuery, $connectionQuery, $link, &$results, $contextId){
