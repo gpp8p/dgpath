@@ -33,11 +33,19 @@ $ruleQuery = "SELECT dgpath_rules.id as id, dgpath_rules.event_id as event_id, d
 $eventQuery = "SELECT dgpath_events.id as id, dgpath_events.component_id as component_id, dgpath_events.label as label, dgpath_events.navigation as navigation, dgpath_events.event_type as event_type, dgpath_events.show_sub as show_sub, dgpath_events.sub_param as sub_param, dgpath_events.elementId as elementId ";
 $eventQuery = $eventQuery."from dgpath_events where component_id = ?";
 
+$insertComponentQuery = "INSERT INTO dgpath_component(type,x,y,context, title, content, subcontext, elementId) values(?,?,?,?,?,?,?,?)";
+
 $traversalResults = array();
 $ctx = $_POST['subcontext'];
 //$ctx = 141;
 //$globalResult = traverseContextTitles($componentQueryMin, $link,48);
-$globalResult = traverseContext($componentQueryMin, $connectionQuery, $link, $traversalResults, $ctx);
+
+
+$componentCrossReference = array();
+$mock_Id = 679;
+
+
+$globalResult = traverseContext($componentQuery, $connectionQuery, $link, $traversalResults, $ctx);
 
 $returnDataJson = json_encode($globalResult);
 echo($returnDataJson);
@@ -55,6 +63,7 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
     $componentQueryResult = mysqli_prepared_query($link,$componentQuery,"s",$componentParams);
     foreach($componentQueryResult as $row){
         if($row['type']!='subcontext'){
+            insertComponent($row, $link);
             $row["connections"] = getComponentConnections($row[id], $connectionForComponentQuery, $link);
             $row['events'] = getComponentEvents($row[id], $eventQuery, $link);
             array_push($thisContextComponents, $row);
@@ -68,6 +77,35 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
     $contextResults = array($thisContextComponents);
     array_push($results, $contextResults);
     return $thisContextComponents;
+}
+
+function insertComponent($existingComponent, $link){
+    global $componentCrossReference, $mock_Id, $insertComponentQuery;
+
+    $type = $existingComponent['type'];
+    $xpos = $existingComponent['x'];
+    $ypos = $existingComponent['y'];
+    $context = $existingComponent['context'];
+    $title = $existingComponent['title'];
+    $content = $existingComponent['content'];
+    $subcontext = $existingComponent['subcontext'];
+    $elementId = $existingComponent['elementId'];
+    $id = $existingComponent['id'];
+
+    if ($stmt = mysqli_prepare($link, $insertComponentQuery)) {
+        mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
+        /*        mysqli_stmt_execute($stmt);
+                if(mysqli_affected_rows($link)==0){
+                    header('HTTP/1.0 400 Nothing saved - component insert');
+                    exit;
+                }else {
+                    $componentLastItemID = $stmt->insert_id;
+                }
+        */
+        $componentCrossReference[strval($id)] = $mock_Id;
+        $mock_Id++;
+
+    }
 }
 
 
