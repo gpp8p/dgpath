@@ -108,6 +108,13 @@ foreach($queryResult as $row){
 // the way this works is a component id is pushed on the 'nodes to visit' stack, and it continues to search untill this stack is empty
 // this is a straight-out 'frontioer-node' search algorithm
 
+$startingNodeExits = getEventsForSubContext($componentId, $link);
+if(count($startingNodeExits)>0){
+    foreach($startingNodeExits as $thisExit) {
+        array_push($visitedNodes, $thisExit);
+    }
+}
+
 array_push($nodesToVisit, $componentId);
 
 // the results of this query are redundant insofar as the component data is concerned.  What changes is the event data,
@@ -127,7 +134,7 @@ while(count($nodesToVisit)>0){
                     foreach($scExits as $thisExit){
                         array_push($nodesToVisit,$thisExit);
                     }
-                // if its an entry door, push the contextid onto the stack
+                    // if its an entry door, push the contextid onto the stack
                 }else if($thisNode['thisComponentType']=='entry_door'){
                     $scComponent=getSubContextComponentId($thisNode['thisContextId'], $link);
                     foreach($scComponent as $thisScComponent){
@@ -191,11 +198,11 @@ function getPathsFromComponent($componentId, $link){
     $eventsFound = array();
 
 
-$query = "select dgpath_events.label as eventLabel, dgpath_events.id as eventId, dgpath_events.event_type as eventType, dgpath_events.sub_param as sub_param, dgpath_component.id as componentId, cast(dgpath_connection.go_ahead as unsigned)  as goAhead, dgpath_component.type as componentType, dgpath_component.subcontext as subContextId, dgpath_component.context as contextId, dgpath_component.title as componentTitle, dgpath_connection.id as connectionId from dgpath_component, dgpath_events, dgpath_connection ";
-$query = $query."where dgpath_events.component_id = dgpath_component.id ";
-$query = $query."and dgpath_connection.start_id = dgpath_component.id ";
-$query = $query."and dgpath_connection.end_id=? ";
-$query = $query."order by dgpath_component.id";
+    $query = "select dgpath_events.label as eventLabel, dgpath_events.id as eventId, dgpath_events.event_type as eventType, dgpath_events.sub_param as sub_param, dgpath_component.id as componentId, cast(dgpath_connection.go_ahead as unsigned)  as goAhead, dgpath_component.type as componentType, dgpath_component.subcontext as subContextId, dgpath_component.context as contextId, dgpath_component.title as componentTitle, dgpath_connection.id as connectionId from dgpath_component, dgpath_events, dgpath_connection ";
+    $query = $query."where dgpath_events.component_id = dgpath_component.id ";
+    $query = $query."and dgpath_connection.start_id = dgpath_component.id ";
+    $query = $query."and dgpath_connection.end_id=? ";
+    $query = $query."order by dgpath_component.id";
 
 
 //    $query=$query."and dgpath_connection.go_ahead = 1";
@@ -279,22 +286,22 @@ function getPathRules($eventsToCheck, $link){
 
 
 
-        $result = array();
-        if(strlen($eventsToCheck)==0) return $result;
-        $query = "select dgpath_rules.connection_id as connectionId, dgpath_rules.activate as activate, dgpath_rules.event_id as eventId from dgpath_rules where dgpath_rules.event_id in (";
-        $query = $query.$eventsToCheck.")";
-        if($stmt = mysqli_prepare($link, $query)){
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_bind_result($stmt, $thisConnectionId, $thisConnectionActivate, $thisConnectionEventId);
-            while (mysqli_stmt_fetch($stmt)) {
-                $thisEntry = array($thisConnectionId, $thisConnectionActivate, $thisConnectionEventId);
-                array_push($result, $thisEntry);
-            }
-        }else{
-            header('HTTP/1.0 400 Bad connection query');
-            exit;
+    $result = array();
+    if(strlen($eventsToCheck)==0) return $result;
+    $query = "select dgpath_rules.connection_id as connectionId, dgpath_rules.activate as activate, dgpath_rules.event_id as eventId from dgpath_rules where dgpath_rules.event_id in (";
+    $query = $query.$eventsToCheck.")";
+    if($stmt = mysqli_prepare($link, $query)){
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_bind_result($stmt, $thisConnectionId, $thisConnectionActivate, $thisConnectionEventId);
+        while (mysqli_stmt_fetch($stmt)) {
+            $thisEntry = array($thisConnectionId, $thisConnectionActivate, $thisConnectionEventId);
+            array_push($result, $thisEntry);
         }
-        return $result;
+    }else{
+        header('HTTP/1.0 400 Bad connection query');
+        exit;
+    }
+    return $result;
 }
 
 function getComponentData($componentId, $link){
@@ -312,5 +319,37 @@ function getComponentData($componentId, $link){
     return $queryResult;
 
 
+
+}
+
+function getEventsForSubContext($componentId, $link){
+    $eventQueryResult = array();
+    $componentQuery = "select dgpath_component.type as componentType, dgpath_component.subcontext as subcontext from dgpath_component where id = ?";
+    $connectionParams = array($componentId);
+    $queryResult = mysqli_prepared_query($link,$componentQuery,"s",$connectionParams);
+    if ($queryResult[0]=="error") {
+        header('HTTP/1.0 400 connection error in getEventsForSubContext');
+        exit;
+    }
+    if(count($queryResult)!=1){
+        header('HTTP/1.0 400 connection error in getEventsForSubContext - component lookup returned bad results');
+        exit;
+    }
+    foreach($queryResult as $componentData){
+        if($componentData['componentType']=='subcontext'){
+            $exitEventsQuery = "select dgpath_events.id as eventId from dgpath_events, dgpath_component ";
+            $exitEventsQuery = $exitEventsQuery."where dgpath_events.component_id = dgpath_component.id ";
+            $exitEventsQuery = $exitEventsQuery."and dgpath_component.context = ? ";
+            $exitEventsQuery = $exitEventsQuery."and dgpath_component.type = 'exit_door'";
+            $connectionParams = array($componentData['subcontext']);
+            $exitEventsQueryResult = mysqli_prepared_query($link,$exitEventsQuery,"s",$connectionParams);
+            foreach($exitEventsQueryResult as $exitEventId){
+                array_push($eventQueryResult, $exitEventId['eventId']);
+            }
+            return $eventQueryResult;
+        }else{
+            return $eventQueryResult;
+        }
+    }
 
 }
