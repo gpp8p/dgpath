@@ -11,6 +11,13 @@ function loadContent($componentId, $link, &$results){
     $thisComponentQuery = "select dgpath_component.title, dgpath_component.content, dgpath_component.type, dgpath_component.context, dgpath_component.subcontext, dgpath_component.id, dgpath_component.elementId from dgpath_component "
         ."where dgpath_component.id = ?";
 
+    $exitDoorQuery = "select dgpath_component.id as targetComponentId from dgpath_component, dgpath_connection, dgpath_rules, dgpath_events "
+            ."where dgpath_connection.end_id = dgpath_component.id "
+            ."and dgpath_connection.id = dgpath_rules.connection_id "
+            ."and dgpath_rules.event_id = dgpath_events.id "
+            ."and dgpath_events.component_id = ?";
+
+
     $thisConnectionQuery = "select dgpath_connection.end_id from dgpath_connection "
         ."where dgpath_connection.start_id = ? "
         ."and dgpath_connection.go_ahead = 1";
@@ -61,9 +68,13 @@ function loadContent($componentId, $link, &$results){
                             $goingAhead=false;
                         }
                     }else if($thisType==='exit_door'){
-                        $componentId =  getParentContextPath($thisContext, $link);
-                        if($componentId!=null){
+ //                       $componentId =  getParentContextPath($thisContext, $link);
+                        $connectionParams = array($componentId);
+                        $queryResult = mysqli_prepared_query($link,$exitDoorQuery,"s",$connectionParams);
+                        $parentLink = $queryResult[0]['targetComponentId'];
+                        if($parentLink!=null){
                             $connectionFound=true;
+                            $componentId = $parentLink;
                         }else{
                             $connectionFound=false;
                             $goingAhead=false;
