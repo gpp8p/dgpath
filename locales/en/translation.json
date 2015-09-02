@@ -97,6 +97,10 @@
         "evtsBar": "Events that could determine if this path is open or not:",
         "goAheadBar": "Events that could determine actions as this component is included in what the learner sees",
         "titleBar": "Configure this component:",
+        "defaultConnection": "Use defaults",
+        "manualConfiguration": "Configure connection",
+        "cancelConnection": "Cancel",
+        "connectionConfigurationPrompt": "Do you want to add this to what the user sees and use default settings ?",
         "pathTitleBar": "This path"
     },
     "libraryControlBar":{
