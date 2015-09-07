@@ -37,7 +37,9 @@
       "branchat00": "None Correct",
       "createBranch": "Create This Branching Component",
       "cancelBranch": "Cancel",
-      "removeBranch": "Remove this Component"
+      "removeBranch": "Remove this Component",
+      "moveLeft": "Please drop this branching component to the left of where you have it now.  There is no room to create the exit doors on this canvas",
+      "moveUp": "Please drop this branching component above where you have it now.  There is no ropom to create the exit doors on this canvas"
 
 
     },

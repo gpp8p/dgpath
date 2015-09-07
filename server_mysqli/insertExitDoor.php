@@ -56,4 +56,4 @@ if ($stmt = mysqli_prepare($link, $query)) {
     exit;
 }
 
-return "Ok";
+echo($componentLastItemID);
