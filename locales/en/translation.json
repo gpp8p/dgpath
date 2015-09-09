@@ -115,6 +115,7 @@
         "page1": "Page One",
         "page2": "Page Two",
         "goNext": "Go Ahead",
+        "removeComponent": "Remove thisComponent",
         "removeComponent": "Remove This Component"
     },
     "miscLabels": {
