@@ -119,7 +119,28 @@ if($connectionFound){
         header('HTTP/1.0 400 bad query - update connection');
         exit;
     }
+    echo "ok";
 }else{
+    $eventId;
+    $eventsQuery = "SELECT id from dgpath_events where component_id = ? and event_type =  ?";
+    $componentParams = array($componentId, $componentViewed);
+    $queryResult = mysqli_prepared_query($link,$eventsQuery,"ss",$componentParams);
+    if ($queryResult[0]=="error") {
+        header('HTTP/1.0 400 connection error in getEventsForSubContext');
+        exit;
+    }
+    $eventFound = false;
+    foreach($queryResult as $eventData){
+        $eventId = $eventData['id'];
+        $eventFound=true;
+    }
+    if(!$eventFound){
+        header('HTTP/1.0 400 event not found for branching component');
+        exit;
+    }
+
+
+
     $setGoAhead =0;
     $query = "INSERT INTO dgpath_connection(start_id,end_id, go_ahead) values (?,?,?)";
     if ($stmt = mysqli_prepare($link, $query)) {
@@ -133,8 +154,21 @@ if($connectionFound){
         header('HTTP/1.0 400 bad query - connection insert');
         exit;
     }
+    $connectionId = $stmt->insert_id;
+    $query = "INSERT INTO dgpath_rules(event_id, connection_id, activate) values (?,?,?)";
+    if ($stmt = mysqli_prepare($link, $query)) {
+        mysqli_stmt_bind_param($stmt, "sss", $eventId, $connectionId, $passActivate);
+        mysqli_stmt_execute($stmt);
+        if(mysqli_stmt_affected_rows($stmt)==0){
+            header('HTTP/1.0 400 Nothing saved - connection insert');
+            exit;
+        }
+    }else{
+        header('HTTP/1.0 400 bad query - rule insert');
+        exit;
+    }
 
-// insert rule here
+
 
 
     $query = "INSERT INTO dgpath_connection(start_id,end_id, go_ahead) values (?,?,?)";
@@ -150,7 +184,21 @@ if($connectionFound){
         exit;
     }
 
-    // insert rule here
+    $connectionId = $stmt->insert_id;
+    $query = "INSERT INTO dgpath_rules(event_id, connection_id, activate) values (?,?,?)";
+    if ($stmt = mysqli_prepare($link, $query)) {
+        mysqli_stmt_bind_param($stmt, "sss", $eventId, $connectionId, $failActivate);
+        mysqli_stmt_execute($stmt);
+        if(mysqli_stmt_affected_rows($stmt)==0){
+            header('HTTP/1.0 400 Nothing saved - connection insert');
+            exit;
+        }
+    }else{
+        header('HTTP/1.0 400 bad query - rule insert');
+        exit;
+    }
+    echo("ok");
+
 }
 
 
