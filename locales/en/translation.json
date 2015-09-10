@@ -13,6 +13,7 @@
       "correctEntries": "Please correct entries marked in red below",
       "branchingComponentTitleLabel": "Title:",
       "branchingExitOptionLabel": "Generate pass/fail exits that divide based on summary score of:",
+      "branchingExitOptionEditLabel": "Change existing pass/fail threshold:",
       "branchPleaseSelect": "Please Select Threshold",
       "branchat100": "Perfect Score",
       "branchat95": "95%",
@@ -38,6 +39,7 @@
       "createBranch": "Create This Branching Component",
       "cancelBranch": "Cancel",
       "removeBranch": "Remove this Component",
+      "updateBranch": "Change the pass/fail threshold",
       "nopassfail": "You must set a pass-fail level if exits are to be created",
       "moveLeft": "Please drop this branching component to the left of where you have it now.  There is no room to create the exit doors on this canvas",
       "moveUp": "Please drop this branching component above where you have it now.  There is no ropom to create the exit doors on this canvas"

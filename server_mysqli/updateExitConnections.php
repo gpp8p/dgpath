@@ -141,10 +141,10 @@ if($connectionFound){
 
 
 
-    $setGoAhead =0;
+    $setGoAhead = 0;
     $query = "INSERT INTO dgpath_connection(start_id,end_id, go_ahead) values (?,?,?)";
     if ($stmt = mysqli_prepare($link, $query)) {
-        mysqli_stmt_bind_param($stmt, "sss", $componentId, $passExit, $setGoAhead);
+        mysqli_stmt_bind_param($stmt, "ssi", $componentId, $passExit, $setGoAhead);
         mysqli_stmt_execute($stmt);
         if(mysqli_stmt_affected_rows($stmt)==0){
             header('HTTP/1.0 400 Nothing saved - connection insert');
@@ -155,9 +155,10 @@ if($connectionFound){
         exit;
     }
     $connectionId = $stmt->insert_id;
-    $query = "INSERT INTO dgpath_rules(event_id, connection_id, activate) values (?,?,?)";
+    $query = "INSERT INTO dgpath_rules(event_id, connection_id, activate, detail_re) values (?,?,?,?)";
     if ($stmt = mysqli_prepare($link, $query)) {
-        mysqli_stmt_bind_param($stmt, "sss", $eventId, $connectionId, $passActivate);
+        $whichDoor = "pass";
+        mysqli_stmt_bind_param($stmt, "ssss", $eventId, $connectionId, $passActivate, $whichDoor);
         mysqli_stmt_execute($stmt);
         if(mysqli_stmt_affected_rows($stmt)==0){
             header('HTTP/1.0 400 Nothing saved - connection insert');
@@ -173,7 +174,7 @@ if($connectionFound){
 
     $query = "INSERT INTO dgpath_connection(start_id,end_id, go_ahead) values (?,?,?)";
     if ($stmt = mysqli_prepare($link, $query)) {
-        mysqli_stmt_bind_param($stmt, "sss", $componentId, $failExit, $setGoAhead);
+        mysqli_stmt_bind_param($stmt, "ssi", $componentId, $failExit, $setGoAhead);
         mysqli_stmt_execute($stmt);
         if(mysqli_stmt_affected_rows($stmt)==0){
             header('HTTP/1.0 400 Nothing saved - connection insert');
@@ -185,9 +186,10 @@ if($connectionFound){
     }
 
     $connectionId = $stmt->insert_id;
-    $query = "INSERT INTO dgpath_rules(event_id, connection_id, activate) values (?,?,?)";
+    $query = "INSERT INTO dgpath_rules(event_id, connection_id, activate, detail_re) values (?,?,?,?)";
     if ($stmt = mysqli_prepare($link, $query)) {
-        mysqli_stmt_bind_param($stmt, "sss", $eventId, $connectionId, $failActivate);
+        $whichDoor = "fail";
+        mysqli_stmt_bind_param($stmt, "ssss", $eventId, $connectionId, $failActivate, $whichDoor);
         mysqli_stmt_execute($stmt);
         if(mysqli_stmt_affected_rows($stmt)==0){
             header('HTTP/1.0 400 Nothing saved - connection insert');
