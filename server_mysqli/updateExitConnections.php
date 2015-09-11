@@ -141,6 +141,10 @@ if($connectionFound){
 
 
 
+
+
+
+
     $setGoAhead = 0;
     $query = "INSERT INTO dgpath_connection(start_id,end_id, go_ahead) values (?,?,?)";
     if ($stmt = mysqli_prepare($link, $query)) {
@@ -199,6 +203,34 @@ if($connectionFound){
         header('HTTP/1.0 400 bad query - rule insert');
         exit;
     }
+
+    $eventsQuery = "select elementId, component_id from dgpath_events, dgpath_connection where dgpath_connection.start_id = ? and dgpath_events.component_id = dgpath_connection.end_id";
+    $componentParams = array($componentId);
+    $queryResult = mysqli_prepared_query($link,$eventsQuery,"s",$componentParams);
+    if ($queryResult[0]=="error") {
+        header('HTTP/1.0 400 connection error in getEventsForSubContext');
+        exit;
+    }
+    foreach($queryResult as $eventData){
+        $eventComponentId = $eventData['component_id'];
+        $eventElementId = $eventData['elementId'];
+        $navValue = 1;
+        $newEventLabel = "exit door traversed";
+        $EventInsertQuery = "INSERT INTO dgpath_events(component_id, label, navigation, event_type, elementId) values (?,?,?,?,?)";
+        if ($stmt = mysqli_prepare($link, $EventInsertQuery)) {
+            mysqli_stmt_bind_param($stmt, "ssiss", $eventComponentId, $newEventLabel, $navValue, $componentViewed, $eventElementId);
+            mysqli_stmt_execute($stmt);
+            if(mysqli_stmt_affected_rows($stmt)==0){
+                header('HTTP/1.0 400 Nothing saved - componentViewed event insert for branching door cretion');
+                exit;
+            }
+        }else{
+            header('HTTP/1.0 400 bad query - rule insert');
+            exit;
+        }
+    }
+
+
     echo("ok");
 
 }

@@ -56,43 +56,86 @@ function loadContent($componentId, $link, &$results){
                 }
                 if(!$componentFound){
                     return array('status'=>"Error - component not found");
-                }else{
+                }else {
                     $connectionFound = false;
                     $nextComponent = null;
-                    if($thisType==='subcontext'){
-                        $componentId =  getSubContextPath($thisSubContext, $link);
-                        if($componentId!=null){
-                            $connectionFound=true;
-                        }else{
-                            $connectionFound=false;
-                            $goingAhead=false;
+                    if ($thisType === 'subcontext') {
+                        $componentId = getSubContextPath($thisSubContext, $link);
+                        if ($componentId != null) {
+                            $connectionFound = true;
+                        } else {
+                            $connectionFound = false;
+                            $goingAhead = false;
                         }
-                    }else if($thisType==='exit_door'){
- //                       $componentId =  getParentContextPath($thisContext, $link);
+                    } else if ($thisType === 'exit_door') {
+                        //                       $componentId =  getParentContextPath($thisContext, $link);
                         $connectionParams = array($componentId);
-                        $queryResult = mysqli_prepared_query($link,$exitDoorQuery,"s",$connectionParams);
+                        $queryResult = mysqli_prepared_query($link, $exitDoorQuery, "s", $connectionParams);
                         $parentLink = $queryResult[0]['targetComponentId'];
-                        if($parentLink!=null){
-                            $connectionFound=true;
+                        if ($parentLink != null) {
+                            $connectionFound = true;
                             $componentId = $parentLink;
-                        }else{
-                            $connectionFound=false;
-                            $goingAhead=false;
+                        } else {
+                            $connectionFound = false;
+                            $goingAhead = false;
                         }
-                    }else{
+                    } else if ($thisType === 'branch') {
+                        $connectedComponentIds = array();
+                        $query = "SELECT end_id from dgpath_connection where  start_id = ?";
+                        $componentParams = array($id);
+                        $queryResult = mysqli_prepared_query($link, $query, "s", $componentParams);
+                        if ($queryResult[0] == "error") {
+                            header('HTTP/1.0 400 connection error in getEventsForSubContext');
+                            exit;
+                        }
+                        foreach ($queryResult as $componentData) {
+                            $thisConnectionId = $componentData['end_id'];
+                            array_push($connectedComponentIds, $thisConnectionId);
+                        }
+                        foreach ($connectedComponentIds as $thisConnectedComponentId) {
+                            if ($stmt = mysqli_prepare($link, $thisComponentQuery)) {
+                                mysqli_stmt_bind_param($stmt, "s", $thisConnectedComponentId);
+                                mysqli_stmt_execute($stmt);
+                                mysqli_stmt_bind_result($stmt, $title, $content, $type, $context, $subcontext, $componentId, $elementId);
+                                while (mysqli_stmt_fetch($stmt)) {
+                                    $thisTitle = $title;
+                                    $thisContent = $content;
+                                    $thisType = $type;
+                                    $thisContext = $context;
+                                    $thisSubContext = "";
+                                    $id = $componentId;
+                                    if ($subcontext != null) {
+                                        $thisSubContext = $subcontext;
+                                    }
+                                    if ($elementId != null) {
+                                        $thisElementId = $elementId;
+                                    } else {
+                                        $thisElementId = "";
+                                    }
+
+                                    $thisComponent = array('title' => $thisTitle, 'content' => $thisContent, 'type' => $thisType, 'context' => $thisContext, 'subcontext' => $thisSubContext, 'id' => $id, 'elementId' => $thisElementId);
+                                    array_push($results, $thisComponent);
+                                }
+                            } else {
+                                header('HTTP/1.0 400 error loading connected components from a branch');
+                                exit;
+                            }
+                        }
+                        $goingAhead = false;
+                    } else {
                         if ($stmt = mysqli_prepare($link, $thisConnectionQuery)) {
                             mysqli_stmt_bind_param($stmt, "s", $componentId);
                             mysqli_stmt_execute($stmt);
-                            mysqli_stmt_bind_result($stmt, $endId );
+                            mysqli_stmt_bind_result($stmt, $endId);
                             while (mysqli_stmt_fetch($stmt)) {
                                 $connectionFound = true;
                                 $componentId = $endId;
                             }
-                            if(!$connectionFound){
+                            if (!$connectionFound) {
                                 $goingAhead = false;
                             }
-                        }else{
-                            return array('status'=>"Error - bad connection query");
+                        } else {
+                            return array('status' => "Error - bad connection query");
                         }
                     }
                 }
