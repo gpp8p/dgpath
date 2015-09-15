@@ -39,6 +39,9 @@ $traversalResults = array();
 $ctx = $_POST['subcontext'];
 //$ctx = 141;
 //$globalResult = traverseContextTitles($componentQueryMin, $link,48);
+$myfile = fopen("/var/tmp/cloneContextLog.txt", "w");
+$txt = "cloneContextLog is open\n";
+fwrite($myfile, $txt);
 
 
 $componentCrossReference = array();
@@ -48,26 +51,33 @@ $mock_Id = 679;
 $globalResult = traverseContext($componentQuery, $connectionQuery, $link, $traversalResults, $ctx);
 
 $returnDataJson = json_encode($globalResult);
+fclose($myfile);
 echo($returnDataJson);
 
 
 
 
 function traverseContext($componentQuery, $connectionQuery, $link, &$results, $contextId){
-    global $eventQuery;
+    global $eventQuery, $myfile;
     $connectionForComponentQuery = "SELECT dgpath_connection.id as connectionId, dgpath_connection.start_id as start_id, dgpath_connection.end_id as end_id, dgpath_connection.go_ahead as go_ahead from dgpath_connection ";
     $connectionForComponentQuery = $connectionForComponentQuery."where dgpath_connection.start_id = ?";
 
     $componentParams = array($contextId);
     $thisContextComponents = array();
     $componentQueryResult = mysqli_prepared_query($link,$componentQuery,"s",$componentParams);
+    $txt = "running query:".$componentQuery." with params - ".$componentParams."\n";
+    fwrite($myfile, $txt);
     foreach($componentQueryResult as $row){
+        $txt = "\t results = ".$row['title']."-".$row['type']."\n";
+        fwrite($myfile, $txt);
         if($row['type']!='subcontext'){
             insertComponent($row, $link);
             $row["connections"] = getComponentConnections($row[id], $connectionForComponentQuery, $link);
             $row['events'] = getComponentEvents($row[id], $eventQuery, $link);
             array_push($thisContextComponents, $row);
         }else{
+            $txt = "entering subcontext:".$row['title']."\n";
+            fwrite($myfile, $txt);
             $thisResult = traverseContext($componentQuery, $connectionQuery, $link, $results, $row['subcontext']);
             $row['subContextElements']= $thisResult;
             array_push($thisContextComponents, $row);
