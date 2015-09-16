@@ -39,9 +39,11 @@ $traversalResults = array();
 $ctx = $_POST['subcontext'];
 //$ctx = 141;
 //$globalResult = traverseContextTitles($componentQueryMin, $link,48);
-$myfile = fopen("/var/tmp/cloneContextLog.txt", "w");
-$txt = "cloneContextLog is open\n";
-fwrite($myfile, $txt);
+
+$logIt = true;
+if($logIt){
+    $myfile = fopen("/var/tmp/cloneContextLog.txt", "w");
+}
 
 
 $componentCrossReference = array();
@@ -51,14 +53,17 @@ $mock_Id = 679;
 $globalResult = traverseContext($componentQuery, $connectionQuery, $link, $traversalResults, $ctx);
 
 $returnDataJson = json_encode($globalResult);
-fclose($myfile);
+if($logIt){
+    fclose($myfile);
+}
+
 echo($returnDataJson);
 
 
 
 
 function traverseContext($componentQuery, $connectionQuery, $link, &$results, $contextId){
-    global $eventQuery, $myfile;
+    global $eventQuery, $myfile, $logIt;
     $connectionForComponentQuery = "SELECT dgpath_connection.id as connectionId, dgpath_connection.start_id as start_id, dgpath_connection.end_id as end_id, dgpath_connection.go_ahead as go_ahead from dgpath_connection ";
     $connectionForComponentQuery = $connectionForComponentQuery."where dgpath_connection.start_id = ?";
 
@@ -66,10 +71,10 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
     $thisContextComponents = array();
     $componentQueryResult = mysqli_prepared_query($link,$componentQuery,"s",$componentParams);
     $txt = "running query:".$componentQuery." with params - ".$componentParams."\n";
-    fwrite($myfile, $txt);
+    logIt($txt, $logIt);
     foreach($componentQueryResult as $row){
         $txt = "\t results = ".$row['title']."-".$row['type']."\n";
-        fwrite($myfile, $txt);
+        logIt($txt, $logIt);
         if($row['type']!='subcontext'){
             insertComponent($row, $link);
             $row["connections"] = getComponentConnections($row[id], $connectionForComponentQuery, $link);
@@ -77,7 +82,7 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
             array_push($thisContextComponents, $row);
         }else{
             $txt = "entering subcontext:".$row['title']."\n";
-            fwrite($myfile, $txt);
+            logIt($txt, $logIt);
             $thisResult = traverseContext($componentQuery, $connectionQuery, $link, $results, $row['subcontext']);
             $row['subContextElements']= $thisResult;
             array_push($thisContextComponents, $row);
@@ -90,7 +95,7 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
 }
 
 function insertComponent($existingComponent, $link){
-    global $componentCrossReference, $mock_Id, $insertComponentQuery;
+    global $componentCrossReference, $mock_Id, $insertComponentQuery, $logIt;
 
     $type = $existingComponent['type'];
     $xpos = $existingComponent['x'];
@@ -103,6 +108,7 @@ function insertComponent($existingComponent, $link){
     $id = $existingComponent['id'];
 
     if ($stmt = mysqli_prepare($link, $insertComponentQuery)) {
+        $txt = "inserting component - ".$type."-".$xpos."-".$ypos."-".$context."-".$title."-".$content."-".$subcontext."-".$elementId;
         mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
         /*        mysqli_stmt_execute($stmt);
                 if(mysqli_affected_rows($link)==0){
@@ -113,6 +119,8 @@ function insertComponent($existingComponent, $link){
                 }
         */
         $componentCrossReference[strval($id)] = $mock_Id;
+        $txt=$txt." new id:".$mock_Id."\n";
+        logIt($txt, $logIt);
         $mock_Id++;
 
     }
@@ -158,4 +166,9 @@ function getConnectionRules($connectionId, $ruleQuery, $link){
 function getComponentEvents($componentId, $eventQuery, $link){
     $eventParams = array($componentId);
     return mysqli_prepared_query($link,$eventQuery,"s",$eventParams);
+}
+
+function logIt($txt, $logOn){
+    global $myfile;
+    fwrite($myfile, $txt);
 }
