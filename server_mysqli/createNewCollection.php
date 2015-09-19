@@ -47,11 +47,12 @@ if (mysqli_connect_errno()) {
     exit();
 }
 // insert project (i.e. collection)
-$query = "INSERT INTO dgpath_project(proj_name, description) values(?,?)";
+$thisRoleId=0;
+$query = "INSERT INTO dgpath_project(proj_name, description, role_id) values(?,?,?)";
 if ($stmt = mysqli_prepare($link, $query)) {
-    mysqli_stmt_bind_param($stmt, "ss", $collectionTitle, $collectionDescription);
+    mysqli_stmt_bind_param($stmt, "ssi", $collectionTitle, $collectionDescription,$thisRoleId);
     mysqli_stmt_execute($stmt);
-    if(mysqli_stmt_affected_rows($stmt)==0){
+    if(mysqli_stmt_affected_rows($stmt)<=0){
         header('HTTP/1.0 400 Nothing saved - collection insert');
         exit;
     }
@@ -66,7 +67,7 @@ $query = "insert into dgpath_group(label) values (?)";
 if ($stmt3 = mysqli_prepare($link, $query)) {
     mysqli_stmt_bind_param($stmt3, "s", $ownerGroupName);
     mysqli_stmt_execute($stmt3);
-    if(mysqli_stmt_affected_rows($stmt3)==0){
+    if(mysqli_stmt_affected_rows($stmt3)<=0){
         header('HTTP/1.0 400 Nothing saved - collection group insert');
         exit;
     }
@@ -80,7 +81,7 @@ $query = "insert into dgpath_user_in_group (user_id, group_id) values (?,?)";
 if ($stmt5 = mysqli_prepare($link, $query)) {
     mysqli_stmt_bind_param($stmt5, "dd", $thisUserId,$thisOwnerGroupId);
     mysqli_stmt_execute($stmt5);
-    if(mysqli_stmt_affected_rows($stmt5)==0){
+    if(mysqli_stmt_affected_rows($stmt5)<=0){
         header('HTTP/1.0 400 Nothing saved - project author group member insert');
         exit;
     }
@@ -93,7 +94,7 @@ $query = "insert into dgpath_cando_project (project_id, group_id, permission_id)
 if ($stmt6 = mysqli_prepare($link, $query)) {
     mysqli_stmt_bind_param($stmt6, "ddd", $thisProject, $thisOwnerGroupId, $libraryPermissions);
     mysqli_stmt_execute($stmt6);
-    if(mysqli_stmt_affected_rows($stmt6)==0){
+    if(mysqli_stmt_affected_rows($stmt6)<=0){
         header('HTTP/1.0 400 Nothing saved - collection library group permission insert');
         exit;
     }
@@ -108,7 +109,7 @@ $query = "insert into dgpath_context(title, project, parent, topcontext) values 
 if ($stmt2 = mysqli_prepare($link, $query)) {
     mysqli_stmt_bind_param($stmt2, "ssii", $collectionTitle, $thisProject, $parent, $topcontext);
     mysqli_stmt_execute($stmt2);
-    if(mysqli_stmt_affected_rows($stmt2)==0){
+    if(mysqli_stmt_affected_rows($stmt2)<=0){
         header('HTTP/1.0 400 Nothing saved - context insert');
         exit;
     }

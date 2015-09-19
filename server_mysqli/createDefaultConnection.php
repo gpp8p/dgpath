@@ -22,7 +22,7 @@ $endId = $_POST['endId'];
 $setGoAhead =1;
 $query = "INSERT INTO dgpath_connection(start_id,end_id, go_ahead) values (?,?,?)";
 if ($stmt = mysqli_prepare($link, $query)) {
-    mysqli_stmt_bind_param($stmt, "sss", $startId, $endId, $setGoAhead);
+    mysqli_stmt_bind_param($stmt, "ssi", $startId, $endId, $setGoAhead);
     mysqli_stmt_execute($stmt);
     if(mysqli_stmt_affected_rows($stmt)==0){
         header('HTTP/1.0 400 Nothing saved - connection insert');
