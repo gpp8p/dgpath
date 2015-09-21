@@ -126,7 +126,22 @@ function insertComponent($existingComponent, $link){
     }
 }
 
-
+function transformFib($fibContent){
+    $explodedFibArray = explode("{", $fibContent);
+    $newIds = array();
+    $newFibString = "";
+    foreach($explodedFibArray as $thisExplodedFib){
+        $closingBracePosition = strpos($thisExplodedFib,"}");
+        $newElementId = newGuid();
+        array_push($newIds,$newElementId);
+        $newFib = "{".$newElementId."}".substr($thisExplodedFib,$closingBracePosition+1);
+        $newFibString=$newFibString.$newFib;
+    }
+    $transformFibPackage = array();
+    array_push($transformFibPackage,$newFibString);
+    array_push($transformFibPackage, $newIds);
+    return $transformFibPackage;
+}
 
 function traverseContextTitles($componentQuery,  $link, $contextId){
 
@@ -173,7 +188,7 @@ function logIt($txt, $logOn){
     fwrite($myfile, $txt);
 }
 
-function NewGuid() {
+function newGuid() {
     $s = strtoupper(md5(uniqid(rand(),true)));
     $guidText =
         substr($s,0,8) . '-' .
