@@ -35,6 +35,8 @@ $eventQuery = $eventQuery."from dgpath_events where component_id = ?";
 
 $insertComponentQuery = "INSERT INTO dgpath_component(type,x,y,context, title, content, subcontext, elementId) values(?,?,?,?,?,?,?,?)";
 
+$eventFromElementIdQuery = "select event_type, label, sub_param, id from dgpath_events where elementId= ?";
+
 $traversalResults = array();
 $ctx = $_POST['subcontext'];
 //$ctx = 141;
@@ -106,6 +108,39 @@ function insertComponent($existingComponent, $link){
     $subcontext = $existingComponent['subcontext'];
     $elementId = $existingComponent['elementId'];
     $id = $existingComponent['id'];
+    $newContent="";
+
+    switch ($type) {
+        case "fib":
+            $packedNewFib = transformFib($content);
+            $newContent = $packedNewFib[0];
+            if ($stmt = mysqli_prepare($link, $insertComponentQuery)) {
+                $txt = "inserting component - ".$type."-".$xpos."-".$ypos."-".$context."-".$title."-".$newContent."-".$subcontext."-".$elementId;
+                mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
+                /*        mysqli_stmt_execute($stmt);
+                        if(mysqli_affected_rows($link)==0){
+                            header('HTTP/1.0 400 Nothing saved - component insert');
+                            exit;
+                        }else {
+                            $componentLastItemID = $stmt->insert_id;
+                        }
+                */
+                $componentCrossReference[strval($id)] = $mock_Id;
+                $txt=$txt." new id:".$mock_Id."\n";
+                logIt($txt, $logIt);
+                $mock_Id++;
+
+            }
+            $newEventElementIds = $packedNewFib[1];
+            foreach($newEventElementIds as $thisNewElementId){
+
+            }
+            break;
+    }
+
+
+
+
 
     if ($stmt = mysqli_prepare($link, $insertComponentQuery)) {
         $txt = "inserting component - ".$type."-".$xpos."-".$ypos."-".$context."-".$title."-".$content."-".$subcontext."-".$elementId;
@@ -127,20 +162,35 @@ function insertComponent($existingComponent, $link){
 }
 
 function transformFib($fibContent){
+    global $eventFromElementIdQuery, $link;
     $explodedFibArray = explode("{", $fibContent);
-    $newIds = array();
+    $eventsToAdd = array();
     $newFibString = "";
     foreach($explodedFibArray as $thisExplodedFib){
         $closingBracePosition = strpos($thisExplodedFib,"}");
+        $oldElementId = substr($thisExplodedFib,1,$closingBracePosition-1);
         $newElementId = newGuid();
-        array_push($newIds,$newElementId);
+        $componentParams = array($oldElementId);
+        $eventQueryResult = mysqli_prepared_query($link,$eventFromElementIdQuery,"s",$componentParams);
+        foreach($eventQueryResult as $thisEventQueryResult){
+            $newEvent = array();
+            array_push($newEvent, $newElementId);
+            array_push($newEvent, $thisEventQueryResult['event_type']);
+            array_push($newEvent, $thisEventQueryResult['label']);
+            array_push($newEvent, $thisEventQueryResult['sub_param']);
+            array_push($eventsToAdd, $newEvent);
+        }
         $newFib = "{".$newElementId."}".substr($thisExplodedFib,$closingBracePosition+1);
         $newFibString=$newFibString.$newFib;
     }
     $transformFibPackage = array();
     array_push($transformFibPackage,$newFibString);
-    array_push($transformFibPackage, $newIds);
+    array_push($transformFibPackage, $eventsToAdd);
     return $transformFibPackage;
+}
+
+function insertNewEvent($componentId, $elementId, $eventType, $subParam, $eventLabel){
+
 }
 
 function traverseContextTitles($componentQuery,  $link, $contextId){
