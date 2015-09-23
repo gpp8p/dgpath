@@ -110,7 +110,7 @@ function insertComponent($existingComponent, $link){
     $elementId = $existingComponent['elementId'];
     $id = $existingComponent['id'];
     $newContent="";
-    $txt=$txt." new component id:".$title."\n";
+    $txt=" new component id:".$title."\n";
     logIt($txt, $logIt);
 
     switch ($type) {
