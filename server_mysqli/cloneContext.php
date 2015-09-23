@@ -49,6 +49,7 @@ if($logIt){
 
 
 $componentCrossReference = array();
+$eventCrossReference = array();
 $mock_Id = 679;
 
 
@@ -97,7 +98,7 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
 }
 
 function insertComponent($existingComponent, $link){
-    global $componentCrossReference, $mock_Id, $insertComponentQuery, $logIt;
+    global $componentCrossReference, $eventCrossReference, $mock_Id, $insertComponentQuery, $logIt;
 
     $type = $existingComponent['type'];
     $xpos = $existingComponent['x'];
@@ -109,13 +110,15 @@ function insertComponent($existingComponent, $link){
     $elementId = $existingComponent['elementId'];
     $id = $existingComponent['id'];
     $newContent="";
+    $txt=$txt." new component id:".$title."\n";
+    logIt($txt, $logIt);
 
     switch ($type) {
         case "fib":
             $packedNewFib = transformFib($content);
             $newContent = $packedNewFib[0];
             if ($stmt = mysqli_prepare($link, $insertComponentQuery)) {
-                $txt = "inserting component - ".$type."-".$xpos."-".$ypos."-".$context."-".$title."-".$newContent."-".$subcontext."-".$elementId;
+                $txt = "Inserting new component - ".$type."-".$xpos."-".$ypos."-".$context."-".$title."-".$newContent."-".$subcontext."-".$elementId."\n";
                 mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
                 /*        mysqli_stmt_execute($stmt);
                         if(mysqli_affected_rows($link)==0){
@@ -126,39 +129,28 @@ function insertComponent($existingComponent, $link){
                         }
                 */
                 $componentCrossReference[strval($id)] = $mock_Id;
-                $txt=$txt." new id:".$mock_Id."\n";
+                $txt=$txt." new component id:".$mock_Id."\n";
                 logIt($txt, $logIt);
                 $mock_Id++;
 
             }
             $newEventElementIds = $packedNewFib[1];
-            foreach($newEventElementIds as $thisNewElementId){
-
+            foreach($newEventElementIds as $thisNewEvent){
+                $thisNewEventElementId = $thisNewEvent[0];
+                $thisNewEventType = $thisNewEvent[1];
+                $thisNewEventLabel = $thisNewEvent[2];
+                $thisNewEventSubParam = $thisNewEvent[3];
+                $thisOldEventId = $thisNewEvent[4];
+                $eventCrossReference[strval($thisOldEventId)] = mock_Id;
+                $txt=$txt." new event id:".$mock_Id."\n";
+                logIt($txt, $logIt);
+                $txt = "Inserting new event - ".$thisNewEventElementId." - ".$thisNewEventType." - ".$thisNewEventLabel." - ".$thisNewEventSubParam."\n";
+                logIt($txt, $logIt);
+                $mock_Id++;
             }
             break;
     }
 
-
-
-
-
-    if ($stmt = mysqli_prepare($link, $insertComponentQuery)) {
-        $txt = "inserting component - ".$type."-".$xpos."-".$ypos."-".$context."-".$title."-".$content."-".$subcontext."-".$elementId;
-        mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
-        /*        mysqli_stmt_execute($stmt);
-                if(mysqli_affected_rows($link)==0){
-                    header('HTTP/1.0 400 Nothing saved - component insert');
-                    exit;
-                }else {
-                    $componentLastItemID = $stmt->insert_id;
-                }
-        */
-        $componentCrossReference[strval($id)] = $mock_Id;
-        $txt=$txt." new id:".$mock_Id."\n";
-        logIt($txt, $logIt);
-        $mock_Id++;
-
-    }
 }
 
 function transformFib($fibContent){
@@ -178,6 +170,7 @@ function transformFib($fibContent){
             array_push($newEvent, $thisEventQueryResult['event_type']);
             array_push($newEvent, $thisEventQueryResult['label']);
             array_push($newEvent, $thisEventQueryResult['sub_param']);
+            array_push($newEvent, $thisEventQueryResult['id']);
             array_push($eventsToAdd, $newEvent);
         }
         $newFib = "{".$newElementId."}".substr($thisExplodedFib,$closingBracePosition+1);
