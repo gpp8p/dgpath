@@ -142,7 +142,7 @@ function insertComponent($existingComponent, $link){
                 $thisNewEventSubParam = $thisNewEvent[3];
                 $thisOldEventId = $thisNewEvent[4];
                 $eventCrossReference[strval($thisOldEventId)] = mock_Id;
-                $txt=$txt." new event id:".$mock_Id."\n";
+                $txt=" new event id:".$mock_Id."\n";
                 logIt($txt, $logIt);
                 $txt = "Inserting new event - ".$thisNewEventElementId." - ".$thisNewEventType." - ".$thisNewEventLabel." - ".$thisNewEventSubParam."\n";
                 logIt($txt, $logIt);
@@ -160,7 +160,11 @@ function transformFib($fibContent){
     $newFibString = "";
     foreach($explodedFibArray as $thisExplodedFib){
         $closingBracePosition = strpos($thisExplodedFib,"}");
-        $oldElementId = substr($thisExplodedFib,1,$closingBracePosition-1);
+        if($closingBracePosition==false){
+            $newFibString=$newFibString.$thisExplodedFib;
+            continue;
+        }
+        $oldElementId = substr($thisExplodedFib,0,$closingBracePosition);
         $newElementId = newGuid();
         $componentParams = array($oldElementId);
         $eventQueryResult = mysqli_prepared_query($link,$eventFromElementIdQuery,"s",$componentParams);
