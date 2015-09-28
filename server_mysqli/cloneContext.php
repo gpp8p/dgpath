@@ -153,6 +153,24 @@ function insertComponent($existingComponent, $link){
 
 }
 
+function getConnections($componentId, $link){
+    global $connectionQuery;
+
+    $connectionParams = array($componentId);
+    $connectionsForThisComponent = array();
+    $connectionsForThisComponent = mysqli_prepared_query($link,$connectionQuery,"s",$connectionParams);
+    foreach($connectionsForThisComponent as $thisConnection){
+        $connectionEnd = $thisConnection['end_id'];
+        $connectionStart = $componentId;
+        $connectionGoAhead = $thisConnection['go_ahead'];
+        $connectionId = $thisConnection['id'];
+        $thisConnectionResult = array($connectionId, $connectionStart, $connectionEnd, $connectionGoAhead);
+        array_push($connectionsForThisComponent, $thisConnectionResult);
+    }
+    return $connectionsForThisComponent;
+
+}
+
 function transformFib($fibContent){
     global $eventFromElementIdQuery, $link;
     $explodedFibArray = explode("{", $fibContent);
