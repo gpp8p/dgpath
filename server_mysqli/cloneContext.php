@@ -38,8 +38,8 @@ $insertComponentQuery = "INSERT INTO dgpath_component(type,x,y,context, title, c
 $eventFromElementIdQuery = "select event_type, label, sub_param, id from dgpath_events where elementId= ?";
 
 $traversalResults = array();
-$ctx = $_POST['subcontext'];
-//$ctx = 141;
+//$ctx = $_POST['subcontext'];
+$ctx = 155;
 //$globalResult = traverseContextTitles($componentQueryMin, $link,48);
 
 $logIt = true;
@@ -86,7 +86,7 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
         }else{
             $txt = "entering subcontext:".$row['title']."\n";
             logIt($txt, $logIt);
-            $thisResult = traverseContext($componentQuery, $connectionQuery, $link, $results, $row['subcontext']);
+            $thisResult = traverseContext($componentQuery, $connectionForComponentQuery, $link, $results, $row['subcontext']);
             $row['subContextElements']= $thisResult;
             array_push($thisContextComponents, $row);
         }
@@ -98,7 +98,7 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
 }
 
 function insertComponent($existingComponent, $link){
-    global $componentCrossReference, $eventCrossReference, $mock_Id, $insertComponentQuery, $logIt;
+    global $componentCrossReference, $eventCrossReference, $mock_Id, $insertComponentQuery, $logIt, $connectionQuery, $connectionForComponentQuery;
 
     $type = $existingComponent['type'];
     $xpos = $existingComponent['x'];
@@ -118,7 +118,8 @@ function insertComponent($existingComponent, $link){
             $packedNewFib = transformFib($content);
             $newContent = $packedNewFib[0];
             if ($stmt = mysqli_prepare($link, $insertComponentQuery)) {
-                $txt = "Inserting new component - ".$type."-".$xpos."-".$ypos."-".$context."-".$title."-".$newContent."-".$subcontext."-".$elementId."\n";
+//                $txt = "Inserting new component - ".$type."-".$xpos."-".$ypos."-".$context."-".$title."-".$newContent."-".$subcontext."-".$elementId."\n";
+                $txt = "Inserting new component - ".$type."-".$context."-".$title."-".$subcontext."-".$elementId."\n";
                 mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
                 /*        mysqli_stmt_execute($stmt);
                         if(mysqli_affected_rows($link)==0){
