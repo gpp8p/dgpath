@@ -38,8 +38,17 @@ $insertComponentQuery = "INSERT INTO dgpath_component(type,x,y,context, title, c
 $eventFromElementIdQuery = "select event_type, label, sub_param, id from dgpath_events where elementId= ?";
 
 $traversalResults = array();
-//$ctx = $_POST['subcontext'];
-$ctx = 155;
+$ctx = $_POST['subcontext'];
+$target = $_POST['target'];
+$folderHierarchy = explode("_", $target);
+$folderHierarchySize = sizeof($folderHierarchy);
+$thisFolderReference = $folderHierarchy[$folderHierarchySize-1];
+$targetFolderContextPos = strrpos($thisFolderReference, "-");
+$targetContext = substr($thisFolderReference, $targetFolderContextPos+1);
+
+
+
+//$ctx = 155;
 //$globalResult = traverseContextTitles($componentQueryMin, $link,48);
 
 $logIt = true;
@@ -120,6 +129,7 @@ function insertComponent($existingComponent, $link){
             if ($stmt = mysqli_prepare($link, $insertComponentQuery)) {
 //                $txt = "Inserting new component - ".$type."-".$xpos."-".$ypos."-".$context."-".$title."-".$newContent."-".$subcontext."-".$elementId."\n";
                 $txt = "Inserting new component - ".$type."-".$context."-".$title."-".$subcontext."-".$elementId."\n";
+//                $txt = "INSERT INTO dgpath_component(type,x,y,context, title, content, subcontext, elementId) values ('')";
                 mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
                 /*        mysqli_stmt_execute($stmt);
                         if(mysqli_affected_rows($link)==0){
@@ -142,7 +152,7 @@ function insertComponent($existingComponent, $link){
                 $thisNewEventLabel = $thisNewEvent[2];
                 $thisNewEventSubParam = $thisNewEvent[3];
                 $thisOldEventId = $thisNewEvent[4];
-                $eventCrossReference[strval($thisOldEventId)] = mock_Id;
+                $eventCrossReference[strval($thisOldEventId)] = $mock_Id;
                 $txt=" new event id:".$mock_Id."\n";
                 logIt($txt, $logIt);
                 $txt = "Inserting new event - ".$thisNewEventElementId." - ".$thisNewEventType." - ".$thisNewEventLabel." - ".$thisNewEventSubParam."\n";
