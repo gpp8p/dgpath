@@ -44,6 +44,7 @@ $folderHierarchy = explode("_", $target);
 $folderHierarchySize = sizeof($folderHierarchy);
 $thisFolderReference = $folderHierarchy[$folderHierarchySize-1];
 $targetFolderContextPos = strrpos($thisFolderReference, "-");
+$targetFolderParent = substr($thisFolderReference, 2, $targetFolderContextPos-2);
 $targetContext = substr($thisFolderReference, $targetFolderContextPos+1);
 
 
