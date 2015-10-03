@@ -162,7 +162,8 @@
         "cloneYes": "Go Ahead!",
         "cloneCancel": "Cancel",
         "cancelCollectionSelect": "Cancel",
-        "deleteCollection":"Delete"
+        "deleteCollection":"Delete",
+        "newContextName":"New context name:"
     },
     "events": {
         "1":"Document Viewed",

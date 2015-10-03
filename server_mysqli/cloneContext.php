@@ -37,10 +37,22 @@ $insertComponentQuery = "INSERT INTO dgpath_component(type,x,y,context, title, c
 
 $eventFromElementIdQuery = "select event_type, label, sub_param, id from dgpath_events where elementId= ?";
 
+$eventFromComponentIdQuery = "select id, label, navigation, event_type, show_sub, sub_param, elementId from dgpath_events where component_id= ?";
+
+$insertContextQuery = "INSERT INTO dgpath_context(title, project, parent, topcontext) values (?.?,?,?)";
+
+$updateContextComponentSubContextQuery = "UPDATE dgpath_component set subcontext = ?";
+
+$insertEventQuery = "INSERT INTO dgpath_events (component_id, label, navigation, event_type, show_sub, sub_param, elementId) values(?,?,?,?,?,?,?)";
+
+
 $traversalResults = array();
 $ctx = $_POST['subcontext'];
 $target = $_POST['target'];
+$newContextTitle = $_POST['newContextName'];
 $folderHierarchy = explode("_", $target);
+$projectPiece = $folderHierarchy[0];
+$projectId = substr($projectPiece,2);
 $folderHierarchySize = sizeof($folderHierarchy);
 $thisFolderReference = $folderHierarchy[$folderHierarchySize-1];
 $targetFolderContextPos = strrpos($thisFolderReference, "-");
@@ -63,7 +75,7 @@ $eventCrossReference = array();
 $mock_Id = 679;
 
 
-$globalResult = traverseContext($componentQuery, $connectionQuery, $link, $traversalResults, $ctx);
+$globalResult = traverseContext($componentQuery, $connectionQuery, $link, $traversalResults, $ctx, $targetFolderParent, $targetContext, $projectId, $newContextTitle);
 
 $returnDataJson = json_encode($globalResult);
 if($logIt){
@@ -75,28 +87,30 @@ echo($returnDataJson);
 
 
 
-function traverseContext($componentQuery, $connectionQuery, $link, &$results, $contextId){
-    global $eventQuery, $myfile, $logIt;
+function traverseContext($componentQuery, $connectionQuery, $link, &$results, $contextId, $targetFolderId, $targetCtxId, $targetProjId, $newCtxTitle){
+    global $eventQuery, $myfile, $logIt, $mock_Id;
     $connectionForComponentQuery = "SELECT dgpath_connection.id as connectionId, dgpath_connection.start_id as start_id, dgpath_connection.end_id as end_id, dgpath_connection.go_ahead as go_ahead from dgpath_connection ";
     $connectionForComponentQuery = $connectionForComponentQuery."where dgpath_connection.start_id = ?";
 
-    $componentParams = array($contextId);
+    $sourceContextId = $contextId;
+    $targetContextId = $targetCtxId;
+    $targetProjectId = $targetProjId;
+
+    $componentParams = array($sourceContextId);
     $thisContextComponents = array();
     $componentQueryResult = mysqli_prepared_query($link,$componentQuery,"s",$componentParams);
     $txt = "running query:".$componentQuery." with params - ".$componentParams."\n";
     logIt($txt, $logIt);
     foreach($componentQueryResult as $row){
-        $txt = "\t results = ".$row['title']."-".$row['type']."\n";
-        logIt($txt, $logIt);
         if($row['type']!='subcontext'){
-            insertComponent($row, $link);
-            $row["connections"] = getComponentConnections($row[id], $connectionForComponentQuery, $link);
-            $row['events'] = getComponentEvents($row[id], $eventQuery, $link);
+            $newComponentId = insertComponent($row['type'], $row['x'], $row['y'], $row['context'], $row['title'], $row['content'], $row['subcontext'], $row['emementId'], $row['id'],$link);
+            $thisComponentEvents = getComponentEvents($row[id], $eventQuery, $link);
+            $thisComponentConnections = getComponentConnections($row[id], $connectionForComponentQuery, $link);
             array_push($thisContextComponents, $row);
         }else{
             $txt = "entering subcontext:".$row['title']."\n";
             logIt($txt, $logIt);
-            $thisResult = traverseContext($componentQuery, $connectionForComponentQuery, $link, $results, $row['subcontext']);
+            $thisResult = traverseContext($componentQuery, $connectionForComponentQuery, $link, $results, $row['subcontext'], null, null, null, $row['title']);
             $row['subContextElements']= $thisResult;
             array_push($thisContextComponents, $row);
         }
@@ -107,30 +121,67 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
     return $thisContextComponents;
 }
 
-function insertComponent($existingComponent, $link){
+function insertContext($projectId, $parentId, $title, $topContext, $link){
+    global $mock_Id,$logIt,  $insertContextQuery;
+
+    if ($stmt = mysqli_prepare($link, $insertContextQuery)) {
+        mysqli_stmt_bind_param($stmt, "sssi", $title, $parentId, $projectId, $topContext);
+        /*        mysqli_stmt_execute($stmt);
+                if(mysqli_affected_rows($link)==0){
+                    header('HTTP/1.0 400 Nothing saved - context insert');
+                    exit;
+                }else {
+                    $insertedId = $stmt->insert_id;
+                }
+        */
+        $insertedId = $mock_Id;
+        $txt = "Insert context:".$insertedId."-".$insertContextQuery."{".$title.",".$parentId.",".$projectId.",".$topContext."}\n";
+        logIt($txt, $logIt);
+        $mock_Id++;
+        return $insertedId;
+    }
+
+}
+
+function updateContextComponentSubContext($contextComponentId, $newSubContextId, $link){
+    global $mock_Id, $logIt, $updateContextComponentSubContextQuery;
+
+    if ($stmt = mysqli_prepare($link, $updateContextComponentSubContextQuery)) {
+        mysqli_stmt_bind_param($stmt, "s", $newSubContextId);
+        /*        mysqli_stmt_execute($stmt);
+                if(mysqli_affected_rows($link)==0){
+                    header('HTTP/1.0 400 Nothing saved - context component update');
+                    exit;
+                }
+        */
+        $txt = "Updated context component:" . $updateContextComponentSubContextQuery . "{" . $newSubContextId . "}";
+        logIt($txt, $logIt);
+    }
+}
+
+function insertComponent($existingComponentType, $existingComponentXpos, $existingComponentYpos, $existingComponentContext, $existingComponentTitle, $existingComponentContent, $existingComponentSubcontext, $existingComponentElementId, $existingComponentId,  $link){
     global $componentCrossReference, $eventCrossReference, $mock_Id, $insertComponentQuery, $logIt, $connectionQuery, $connectionForComponentQuery;
 
-    $type = $existingComponent['type'];
-    $xpos = $existingComponent['x'];
-    $ypos = $existingComponent['y'];
-    $context = $existingComponent['context'];
-    $title = $existingComponent['title'];
-    $content = $existingComponent['content'];
-    $subcontext = $existingComponent['subcontext'];
-    $elementId = $existingComponent['elementId'];
-    $id = $existingComponent['id'];
+    $type = $existingComponentType;
+    $xpos = $existingComponentXpos;
+    $ypos = $existingComponentYpos;
+    $context = $existingComponentContext;
+    $title = $existingComponentTitle;
+    $content = $existingComponentContent;
+    $subcontext = $existingComponentSubcontext;
+    $elementId = $existingComponentElementId;
+    $id = $existingComponentId;
     $newContent="";
     $txt=" new component id:".$title."\n";
     logIt($txt, $logIt);
+    $newComponentId = 0;
+    $stmt = null;
 
     switch ($type) {
         case "fib":
             $packedNewFib = transformFib($content);
             $newContent = $packedNewFib[0];
             if ($stmt = mysqli_prepare($link, $insertComponentQuery)) {
-//                $txt = "Inserting new component - ".$type."-".$xpos."-".$ypos."-".$context."-".$title."-".$newContent."-".$subcontext."-".$elementId."\n";
-                $txt = "Inserting new component - ".$type."-".$context."-".$title."-".$subcontext."-".$elementId."\n";
-//                $txt = "INSERT INTO dgpath_component(type,x,y,context, title, content, subcontext, elementId) values ('')";
                 mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
                 /*        mysqli_stmt_execute($stmt);
                         if(mysqli_affected_rows($link)==0){
@@ -141,7 +192,8 @@ function insertComponent($existingComponent, $link){
                         }
                 */
                 $componentCrossReference[strval($id)] = $mock_Id;
-                $txt=$txt." new component id:".$mock_Id."\n";
+                $componentLastItemID = $mock_Id;
+                $txt=$txt."Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
                 logIt($txt, $logIt);
                 $mock_Id++;
 
@@ -153,15 +205,57 @@ function insertComponent($existingComponent, $link){
                 $thisNewEventLabel = $thisNewEvent[2];
                 $thisNewEventSubParam = $thisNewEvent[3];
                 $thisOldEventId = $thisNewEvent[4];
-                $eventCrossReference[strval($thisOldEventId)] = $mock_Id;
-                $txt=" new event id:".$mock_Id."\n";
-                logIt($txt, $logIt);
-                $txt = "Inserting new event - ".$thisNewEventElementId." - ".$thisNewEventType." - ".$thisNewEventLabel." - ".$thisNewEventSubParam."\n";
-                logIt($txt, $logIt);
-                $mock_Id++;
+                $thisNewNav = 0;
+                $thisNewShowSub=0;
+                $eventCrossReference[strval($thisOldEventId)] = insertNewEvent($componentCrossReference[strval($id)], $thisNewEventLabel, $thisNewNav, $thisNewEventType, $thisNewShowSub, $thisNewEventSubParam, $thisNewEventElementId, $link);
             }
             break;
+        case "subcontext":
+            mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
+            /*        mysqli_stmt_execute($stmt);
+                    if(mysqli_affected_rows($link)==0){
+                        header('HTTP/1.0 400 Nothing saved - component insert');
+                        exit;
+                    }else {
+                        $componentLastItemID = $stmt->insert_id;
+                    }
+            */
+            $componentCrossReference[strval($id)] = $mock_Id;
+            $componentLastItemID = $mock_Id;
+            $txt=$txt."Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
+            logIt($txt, $logIt);
+            $mock_Id++;
+            $subContextEvents = getEventsFromComponentId($id, $link);
+            foreach($subContextEvents as $thisSubContextEvent){
+                $thisOldEventId = $thisSubContextEvent['id'];
+                $eventCrossReference[strval($thisOldEventId)] = insertNewEvent($componentCrossReference[strval($id)], $thisSubContextEvent['label'], $thisSubContextEvent['navigation'], $thisSubContextEvent['event_type'], $thisSubContextEvent['show_sub'], $thisSubContextEvent['sub_param'], $elementId, $link);
+            }
+            break;
+        case "doc":
+            mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
+            /*        mysqli_stmt_execute($stmt);
+                    if(mysqli_affected_rows($link)==0){
+                        header('HTTP/1.0 400 Nothing saved - component insert');
+                        exit;
+                    }else {
+                        $componentLastItemID = $stmt->insert_id;
+                    }
+            */
+            $componentCrossReference[strval($id)] = $mock_Id;
+            $componentLastItemID = $mock_Id;
+            $txt=$txt."Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
+            logIt($txt, $logIt);
+            $mock_Id++;
+            $mock_Id++;
+            $docEvents = getEventsFromComponentId($id, $link);
+            foreach($docEvents as $thisDocEvent){
+                $thisOldEventId = $thisDocEvent['id'];
+                $eventCrossReference[strval($thisOldEventId)] = insertNewEvent($componentCrossReference[strval($id)], $thisDocEvent['label'], $thisDocEvent['navigation'], $thisDocEvent['event_type'], $thisDocEvent['show_sub'], $thisDocEvent['sub_param'], $elementId, $link);
+            }
+            break;
+
     }
+    return $componentLastItemID;
 
 }
 
@@ -216,7 +310,31 @@ function transformFib($fibContent){
     return $transformFibPackage;
 }
 
-function insertNewEvent($componentId, $elementId, $eventType, $subParam, $eventLabel){
+function getEventsFromComponentId($componentId, $link){
+    global $eventFromComponentIdQuery;
+    $componentParams = array($componentId);
+    $eventQueryResult = mysqli_prepared_query($link,$eventFromComponentIdQuery,"s",$componentParams);
+    return $eventQueryResult;
+
+}
+
+function insertNewEvent($componentId, $label, $navigation, $eventType, $showSub, $subParam, $elementId, $link){
+    global $mock_Id,$insertEventQuery, $logIt;
+
+    if ($stmt = mysqli_prepare($link, $insertEventQuery)) {
+        mysqli_stmt_bind_param($stmt, "ssisiss", $componentId, $label, $navigation, $eventType, $showSub, $subParam, $elementId);
+        /*        mysqli_stmt_execute($stmt);
+                if(mysqli_affected_rows($link)==0){
+                    header('HTTP/1.0 400 Nothing saved - component insert');
+                    exit;
+                }else {
+                    $insertedEventId = $stmt->insert_id;
+                }
+        */
+        $insertedEventId = $mock_Id;
+        $mock_Id++;
+        return $insertedEventId;
+    }
 
 }
 
