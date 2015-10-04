@@ -179,6 +179,7 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
 
     switch ($type) {
         case "fib":
+            $elementId = newGuid();
             $packedNewFib = transformFib($content);
             $newContent = $packedNewFib[0];
             if ($stmt = mysqli_prepare($link, $insertComponentQuery)) {
@@ -211,6 +212,7 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
             }
             break;
         case "subcontext":
+            $elementId = newGuid();
             mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
             /*        mysqli_stmt_execute($stmt);
                     if(mysqli_affected_rows($link)==0){
@@ -232,6 +234,7 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
             }
             break;
         case "doc":
+            $elementId = newGuid();
             mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
             /*        mysqli_stmt_execute($stmt);
                     if(mysqli_affected_rows($link)==0){
@@ -253,6 +256,68 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
                 $eventCrossReference[strval($thisOldEventId)] = insertNewEvent($componentCrossReference[strval($id)], $thisDocEvent['label'], $thisDocEvent['navigation'], $thisDocEvent['event_type'], $thisDocEvent['show_sub'], $thisDocEvent['sub_param'], $elementId, $link);
             }
             break;
+        case "truefalse":
+            $elementId = newGuid();
+            mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
+            /*        mysqli_stmt_execute($stmt);
+                    if(mysqli_affected_rows($link)==0){
+                        header('HTTP/1.0 400 Nothing saved - component insert');
+                        exit;
+                    }else {
+                        $componentLastItemID = $stmt->insert_id;
+                    }
+            */
+            $componentCrossReference[strval($id)] = $mock_Id;
+            $componentLastItemID = $mock_Id;
+            $txt=$txt."Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
+            logIt($txt, $logIt);
+            $mock_Id++;
+            $mock_Id++;
+            $docEvents = getEventsFromComponentId($id, $link);
+            foreach($docEvents as $thisDocEvent){
+                $thisOldEventId = $thisDocEvent['id'];
+                $eventCrossReference[strval($thisOldEventId)] = insertNewEvent($componentCrossReference[strval($id)], $thisDocEvent['label'], $thisDocEvent['navigation'], $thisDocEvent['event_type'], $thisDocEvent['show_sub'], $thisDocEvent['sub_param'], $elementId, $link);
+            }
+            break;
+        case "multichoice":
+            $elementId = newGuid();
+            $decodedContent = json_decode($content);
+            $multichoiceQuestion = $decodedContent[0];
+            $multiChoiceOptions = $decodedContent[1];
+            $multichoiceElementIdTransform = array();
+            $mcOptionResults=array();
+            foreach ($multiChoiceOptions as $thisMultiChoiceOption) {
+                $newElId = newGuid();
+                $newMcOption = array($thisMultiChoiceOption[0], $thisMultiChoiceOption[2],$newElId);
+                $multichoiceElementIdTransform[$thisMultiChoiceOption[2]]=newGuid();
+                array_unshift($mcOptionResults,$newMcOption);
+            }
+            $newMcContentUnpacked = array($multichoiceQuestion,$mcOptionResults);
+            $newMcContent = json_encode($newMcContentUnpacked);
+
+            mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
+            /*        mysqli_stmt_execute($stmt);
+                    if(mysqli_affected_rows($link)==0){
+                        header('HTTP/1.0 400 Nothing saved - component insert');
+                        exit;
+                    }else {
+                        $componentLastItemID = $stmt->insert_id;
+                    }
+            */
+            $componentCrossReference[strval($id)] = $mock_Id;
+            $componentLastItemID = $mock_Id;
+            $txt=$txt."Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$newMcContent.",".$subcontext.",".$elementId."}\n";
+            logIt($txt, $logIt);
+            $mock_Id++;
+            $mock_Id++;
+            $docEvents = getEventsFromComponentId($id, $link);
+            foreach($docEvents as $thisDocEvent){
+                $thisOldEventId = $thisDocEvent['id'];
+                $eventCrossReference[strval($thisOldEventId)] = insertNewEvent($componentCrossReference[strval($id)], $thisDocEvent['label'], $thisDocEvent['navigation'], $thisDocEvent['event_type'], $thisDocEvent['show_sub'], $thisDocEvent['sub_param'], $multichoiceElementIdTransform[$thisMultiChoiceOption[2]], $link);
+            }
+            break;
+
+
 
     }
     return $componentLastItemID;
@@ -308,6 +373,10 @@ function transformFib($fibContent){
     array_push($transformFibPackage,$newFibString);
     array_push($transformFibPackage, $eventsToAdd);
     return $transformFibPackage;
+}
+
+function transformMultiChoice($multiChoiceContent){
+
 }
 
 function getEventsFromComponentId($componentId, $link){
