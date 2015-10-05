@@ -74,8 +74,12 @@ $componentCrossReference = array();
 $eventCrossReference = array();
 $mock_Id = 679;
 
+$topContextComponentId = insertComponent("subcontext", 0, 0, $targetContext, $newContextTitle, "{}", 0, newGuid(), 0,$link);
+$newTopContext = insertContext($projectId, $topContextComponentId, $newContextTitle, 0, $link);
+updateContextComponentSubContext($topContextComponentId, $newTopContext, $link);
 
-$globalResult = traverseContext($componentQuery, $connectionQuery, $link, $traversalResults, $ctx, $targetFolderParent, $targetContext, $projectId, $newContextTitle);
+
+$globalResult = traverseContext($componentQuery, $connectionQuery, $link, $traversalResults, $newTopContext, $targetFolderParent, $targetContext, $projectId, $newContextTitle);
 
 $returnDataJson = json_encode($globalResult);
 if($logIt){
@@ -96,6 +100,8 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
     $targetContextId = $targetCtxId;
     $targetProjectId = $targetProjId;
 
+
+
     $componentParams = array($sourceContextId);
     $thisContextComponents = array();
     $componentQueryResult = mysqli_prepared_query($link,$componentQuery,"s",$componentParams);
@@ -110,7 +116,11 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
         }else{
             $txt = "entering subcontext:".$row['title']."\n";
             logIt($txt, $logIt);
-            $thisResult = traverseContext($componentQuery, $connectionForComponentQuery, $link, $results, $row['subcontext'], null, null, null, $row['title']);
+            $topContextComponentId = insertComponent("subcontext", 0, 0, $targetContextId, $row['title'], "{}", 0, newGuid(), 0,$link);
+            $newTopContext = insertContext($targetProjectId, $topContextComponentId, $row['title'], 0, $link);
+            updateContextComponentSubContext($topContextComponentId, $newTopContext, $link);
+
+            $thisResult = traverseContext($componentQuery, $connectionForComponentQuery, $link, $results, $newTopContext, null, null, null, $row['title']);
             $row['subContextElements']= $thisResult;
             array_push($thisContextComponents, $row);
         }
@@ -172,8 +182,8 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
     $elementId = $existingComponentElementId;
     $id = $existingComponentId;
     $newContent="";
-    $txt=" new component id:".$title."\n";
-    logIt($txt, $logIt);
+//    $txt=" new component id:".$title."\n";
+//    logIt($txt, $logIt);
     $newComponentId = 0;
     $stmt = null;
 
@@ -194,7 +204,7 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
                 */
                 $componentCrossReference[strval($id)] = $mock_Id;
                 $componentLastItemID = $mock_Id;
-                $txt=$txt."Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
+                $txt = "Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
                 logIt($txt, $logIt);
                 $mock_Id++;
 
@@ -224,7 +234,7 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
             */
             $componentCrossReference[strval($id)] = $mock_Id;
             $componentLastItemID = $mock_Id;
-            $txt=$txt."Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
+            $txt="Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
             logIt($txt, $logIt);
             $mock_Id++;
             $subContextEvents = getEventsFromComponentId($id, $link);
@@ -233,30 +243,15 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
                 $eventCrossReference[strval($thisOldEventId)] = insertNewEvent($componentCrossReference[strval($id)], $thisSubContextEvent['label'], $thisSubContextEvent['navigation'], $thisSubContextEvent['event_type'], $thisSubContextEvent['show_sub'], $thisSubContextEvent['sub_param'], $elementId, $link);
             }
             break;
-        case "doc":
-            $elementId = newGuid();
-            mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
-            /*        mysqli_stmt_execute($stmt);
-                    if(mysqli_affected_rows($link)==0){
-                        header('HTTP/1.0 400 Nothing saved - component insert');
-                        exit;
-                    }else {
-                        $componentLastItemID = $stmt->insert_id;
-                    }
-            */
-            $componentCrossReference[strval($id)] = $mock_Id;
-            $componentLastItemID = $mock_Id;
-            $txt=$txt."Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
-            logIt($txt, $logIt);
-            $mock_Id++;
-            $mock_Id++;
-            $docEvents = getEventsFromComponentId($id, $link);
-            foreach($docEvents as $thisDocEvent){
-                $thisOldEventId = $thisDocEvent['id'];
-                $eventCrossReference[strval($thisOldEventId)] = insertNewEvent($componentCrossReference[strval($id)], $thisDocEvent['label'], $thisDocEvent['navigation'], $thisDocEvent['event_type'], $thisDocEvent['show_sub'], $thisDocEvent['sub_param'], $elementId, $link);
-            }
+        case "folder":
             break;
         case "truefalse":
+        case "branch":
+        case "exit_door":
+        case "entry_door":
+        case "doc":
+
+
             $elementId = newGuid();
             mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
             /*        mysqli_stmt_execute($stmt);
@@ -269,7 +264,7 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
             */
             $componentCrossReference[strval($id)] = $mock_Id;
             $componentLastItemID = $mock_Id;
-            $txt=$txt."Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
+            $txt="Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
             logIt($txt, $logIt);
             $mock_Id++;
             $mock_Id++;
@@ -306,7 +301,7 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
             */
             $componentCrossReference[strval($id)] = $mock_Id;
             $componentLastItemID = $mock_Id;
-            $txt=$txt."Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$newMcContent.",".$subcontext.",".$elementId."}\n";
+            $txt="Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$newMcContent.",".$subcontext.",".$elementId."}\n";
             logIt($txt, $logIt);
             $mock_Id++;
             $mock_Id++;
