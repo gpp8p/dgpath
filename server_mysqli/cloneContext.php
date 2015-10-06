@@ -39,7 +39,7 @@ $eventFromElementIdQuery = "select event_type, label, sub_param, id from dgpath_
 
 $eventFromComponentIdQuery = "select id, label, navigation, event_type, show_sub, sub_param, elementId from dgpath_events where component_id= ?";
 
-$insertContextQuery = "INSERT INTO dgpath_context(title, project, parent, topcontext) values (?.?,?,?)";
+$insertContextQuery = "INSERT INTO dgpath_context(title, project, parent, topcontext) values (?,?,?,?)";
 
 $updateContextComponentSubContextQuery = "UPDATE dgpath_component set subcontext = ?";
 
@@ -79,7 +79,7 @@ $newTopContext = insertContext($projectId, $topContextComponentId, $newContextTi
 updateContextComponentSubContext($topContextComponentId, $newTopContext, $link);
 
 
-$globalResult = traverseContext($componentQuery, $connectionQuery, $link, $traversalResults, $newTopContext, $targetFolderParent, $targetContext, $projectId, $newContextTitle);
+$globalResult = traverseContext($componentQuery, $connectionQuery, $link, $traversalResults, $ctx, $targetFolderParent, $newTopContext, $projectId, $newContextTitle);
 
 $returnDataJson = json_encode($globalResult);
 if($logIt){
@@ -109,7 +109,7 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
     logIt($txt, $logIt);
     foreach($componentQueryResult as $row){
         if($row['type']!='subcontext'){
-            $newComponentId = insertComponent($row['type'], $row['x'], $row['y'], $row['context'], $row['title'], $row['content'], $row['subcontext'], $row['emementId'], $row['id'],$link);
+            $newComponentId = insertComponent($row['type'], $row['x'], $row['y'], $row['context'], $row['title'], $row['content'], $targetContextId, newGuid(), $row['id'],$link);
             $thisComponentEvents = getComponentEvents($row[id], $eventQuery, $link);
             $thisComponentConnections = getComponentConnections($row[id], $connectionForComponentQuery, $link);
             array_push($thisContextComponents, $row);
@@ -164,12 +164,12 @@ function updateContextComponentSubContext($contextComponentId, $newSubContextId,
                     exit;
                 }
         */
-        $txt = "Updated context component:" . $updateContextComponentSubContextQuery . "{" . $newSubContextId . "}";
+        $txt = "Updated context component:" . $updateContextComponentSubContextQuery . "{" . $newSubContextId . "}\n";
         logIt($txt, $logIt);
     }
 }
 
-function insertComponent($existingComponentType, $existingComponentXpos, $existingComponentYpos, $existingComponentContext, $existingComponentTitle, $existingComponentContent, $existingComponentSubcontext, $existingComponentElementId, $existingComponentId,  $link){
+function insertComponent($existingComponentType, $existingComponentXpos, $existingComponentYpos, $existingComponentContext, $existingComponentTitle, $existingComponentContent, $targetComponentSubcontext, $newComponentElementId, $existingComponentId,  $link){
     global $componentCrossReference, $eventCrossReference, $mock_Id, $insertComponentQuery, $logIt, $connectionQuery, $connectionForComponentQuery;
 
     $type = $existingComponentType;
@@ -178,8 +178,8 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
     $context = $existingComponentContext;
     $title = $existingComponentTitle;
     $content = $existingComponentContent;
-    $subcontext = $existingComponentSubcontext;
-    $elementId = $existingComponentElementId;
+    $subcontext = $targetComponentSubcontext;
+    $elementId = $newComponentElementId;
     $id = $existingComponentId;
     $newContent="";
 //    $txt=" new component id:".$title."\n";
@@ -396,6 +396,8 @@ function insertNewEvent($componentId, $label, $navigation, $eventType, $showSub,
                 }
         */
         $insertedEventId = $mock_Id;
+        $txt="Insert event id:".$mock_Id."-".$insertEventQuery."{".$componentId.",".$label.",".$navigation.",".$eventType.",".$showSub.",".$subParam.",".$elementId."}\n";
+        logIt($txt, $logIt);
         $mock_Id++;
         return $insertedEventId;
     }
