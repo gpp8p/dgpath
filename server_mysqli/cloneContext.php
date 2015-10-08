@@ -123,7 +123,7 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
             $newTopContext = insertContext($targetProjectId, $topContextComponentId, $row['title'], 0, $link);
             updateContextComponentSubContext($topContextComponentId, $newTopContext, $link);
 
-            $thisResult = traverseContext($componentQuery, $connectionForComponentQuery, $link, $results, $newTopContext, null, null, null, $row['title']);
+            $thisResult = traverseContext($componentQuery, $connectionForComponentQuery, $link, $results, $row['subcontext'], $topContextComponentId, $targetContextId, $targetProjectId, $row['title']);
             $row['subContextElements']= $thisResult;
             array_push($thisContextComponents, $row);
         }
