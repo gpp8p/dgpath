@@ -77,6 +77,9 @@ $mock_Id = 679;
 $topContextComponentId = insertComponent("subcontext", 0, 0, $targetContext, $newContextTitle, "{}", 0, newGuid(), 0,$link);
 $newTopContext = insertContext($projectId, $topContextComponentId, $newContextTitle, 0, $link);
 updateContextComponentSubContext($topContextComponentId, $newTopContext, $link);
+$newTcLabel = $newContextTitle." entered by user";
+$newTcNav = 1;
+insertNewEvent($topContextComponentId, $newTcLabel, $newTcNav, $contextEntered, 0, "", $elementId, $link);
 
 
 $globalResult = traverseContext($componentQuery, $connectionQuery, $link, $traversalResults, $ctx, $targetFolderParent, $newTopContext, $projectId, $newContextTitle);
@@ -204,7 +207,7 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
                 */
                 $componentCrossReference[strval($id)] = $mock_Id;
                 $componentLastItemID = $mock_Id;
-                $txt = "Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
+                $txt = "Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$newContent.",".$subcontext.",".$elementId."}\n";
                 logIt($txt, $logIt);
                 $mock_Id++;
 
@@ -238,9 +241,11 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
             logIt($txt, $logIt);
             $mock_Id++;
             $subContextEvents = getEventsFromComponentId($id, $link);
-            foreach($subContextEvents as $thisSubContextEvent){
-                $thisOldEventId = $thisSubContextEvent['id'];
-                $eventCrossReference[strval($thisOldEventId)] = insertNewEvent($componentCrossReference[strval($id)], $thisSubContextEvent['label'], $thisSubContextEvent['navigation'], $thisSubContextEvent['event_type'], $thisSubContextEvent['show_sub'], $thisSubContextEvent['sub_param'], $elementId, $link);
+            if($id !='0') {
+                foreach ($subContextEvents as $thisSubContextEvent) {
+                    $thisOldEventId = $thisSubContextEvent['id'];
+                    $eventCrossReference[strval($thisOldEventId)] = insertNewEvent($componentCrossReference[strval($id)], $thisSubContextEvent['label'], $thisSubContextEvent['navigation'], $thisSubContextEvent['event_type'], $thisSubContextEvent['show_sub'], $thisSubContextEvent['sub_param'], $elementId, $link);
+                }
             }
             break;
         case "folder":
@@ -304,9 +309,8 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
             $txt="Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$newMcContent.",".$subcontext.",".$elementId."}\n";
             logIt($txt, $logIt);
             $mock_Id++;
-            $mock_Id++;
             $docEvents = getEventsFromComponentId($id, $link);
-            foreach($docEvents as $thisDocEvent){
+            foreach ($docEvents as $thisDocEvent) {
                 $thisOldEventId = $thisDocEvent['id'];
                 $eventCrossReference[strval($thisOldEventId)] = insertNewEvent($componentCrossReference[strval($id)], $thisDocEvent['label'], $thisDocEvent['navigation'], $thisDocEvent['event_type'], $thisDocEvent['show_sub'], $thisDocEvent['sub_param'], $multichoiceElementIdTransform[$thisMultiChoiceOption[2]], $link);
             }
