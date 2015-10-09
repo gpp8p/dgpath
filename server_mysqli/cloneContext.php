@@ -119,11 +119,11 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
         }else{
             $txt = "entering subcontext:".$row['title']."\n";
             logIt($txt, $logIt);
-            $topContextComponentId = insertComponent("subcontext", 0, 0, $targetContextId, $row['title'], "{}", 0, newGuid(), 0,$link);
+            $topContextComponentId = insertComponent("subcontext", $row['x'], $row['y'] , $targetContextId, $row['title'], "{}", 0, newGuid(), 0,$link);
             $newTopContext = insertContext($targetProjectId, $topContextComponentId, $row['title'], 0, $link);
             updateContextComponentSubContext($topContextComponentId, $newTopContext, $link);
 
-            $thisResult = traverseContext($componentQuery, $connectionForComponentQuery, $link, $results, $row['subcontext'], $topContextComponentId, $targetContextId, $targetProjectId, $row['title']);
+            $thisResult = traverseContext($componentQuery, $connectionForComponentQuery, $link, $results, $row['subcontext'], $topContextComponentId, $newTopContext, $targetProjectId, $row['title']);
             $row['subContextElements']= $thisResult;
             array_push($thisContextComponents, $row);
         }
