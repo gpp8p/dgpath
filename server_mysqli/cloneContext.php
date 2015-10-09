@@ -112,7 +112,7 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
     logIt($txt, $logIt);
     foreach($componentQueryResult as $row){
         if($row['type']!='subcontext'){
-            $newComponentId = insertComponent($row['type'], $row['x'], $row['y'], $row['context'], $row['title'], $row['content'], $targetContextId, newGuid(), $row['id'],$link);
+            $newComponentId = insertComponent($row['type'], $row['x'], $row['y'], $targetContextId, $row['title'], $row['content'], NULL, newGuid(), $row['id'],$link);
             $thisComponentEvents = getComponentEvents($row[id], $eventQuery, $link);
             $thisComponentConnections = getComponentConnections($row[id], $connectionForComponentQuery, $link);
             array_push($thisContextComponents, $row);
@@ -288,7 +288,7 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
             $mcOptionResults=array();
             foreach ($multiChoiceOptions as $thisMultiChoiceOption) {
                 $newElId = newGuid();
-                $newMcOption = array($thisMultiChoiceOption[0], $thisMultiChoiceOption[2],$newElId);
+                $newMcOption = array($thisMultiChoiceOption[0], $thisMultiChoiceOption[1],$newElId);
                 $multichoiceElementIdTransform[$thisMultiChoiceOption[2]]=newGuid();
                 array_unshift($mcOptionResults,$newMcOption);
             }
