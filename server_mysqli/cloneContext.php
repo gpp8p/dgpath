@@ -44,7 +44,8 @@ $insertContextQuery = "INSERT INTO dgpath_context(title, project, parent, topcon
 $updateContextComponentSubContextQuery = "UPDATE dgpath_component set subcontext = ?";
 
 $insertEventQuery = "INSERT INTO dgpath_events (component_id, label, navigation, event_type, show_sub, sub_param, elementId) values(?,?,?,?,?,?,?)";
-
+$insertConnectionQuery = "INSERT INTO dgpath_connection (start_id, end_id, go_ahead) values (?,?,?)";
+$insertRuleQuery = "INSERT INTO dgpath_rules (event_id, connection_id, detail_re, activate) values (?,?,?,?)";
 
 $traversalResults = array();
 $ctx = $_POST['subcontext'];
@@ -72,6 +73,7 @@ if($logIt){
 
 $componentCrossReference = array();
 $eventCrossReference = array();
+$allComponentConnections = array();
 $mock_Id = 679;
 
 $topContextComponentId = insertComponent("subcontext", 0, 0, $targetContext, $newContextTitle, "{}", 0, newGuid(), 0,$link);
@@ -83,6 +85,8 @@ insertNewEvent($topContextComponentId, $newTcLabel, $newTcNav, $contextEntered, 
 
 
 $globalResult = traverseContext($componentQuery, $connectionQuery, $link, $traversalResults, $ctx, $targetFolderParent, $newTopContext, $projectId, $newContextTitle);
+insertConnectionsAndRules($allComponentConnections, $componentCrossReference, $eventCrossReference, $link);
+
 
 $returnDataJson = json_encode($globalResult);
 if($logIt){
@@ -95,7 +99,7 @@ echo($returnDataJson);
 
 
 function traverseContext($componentQuery, $connectionQuery, $link, &$results, $contextId, $targetFolderId, $targetCtxId, $targetProjId, $newCtxTitle){
-    global $eventQuery, $myfile, $logIt, $mock_Id;
+    global $eventQuery, $myfile, $logIt, $mock_Id, $allComponentConnections;
     $connectionForComponentQuery = "SELECT dgpath_connection.id as connectionId, dgpath_connection.start_id as start_id, dgpath_connection.end_id as end_id, dgpath_connection.go_ahead as go_ahead from dgpath_connection ";
     $connectionForComponentQuery = $connectionForComponentQuery."where dgpath_connection.start_id = ?";
 
@@ -115,10 +119,17 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
             $newComponentId = insertComponent($row['type'], $row['x'], $row['y'], $targetContextId, $row['title'], $row['content'], NULL, newGuid(), $row['id'],$link);
             $thisComponentEvents = getComponentEvents($row[id], $eventQuery, $link);
             $thisComponentConnections = getComponentConnections($row[id], $connectionForComponentQuery, $link);
+            if(count($thisComponentConnections)>0) {
+                array_push($allComponentConnections, $thisComponentConnections);
+            }
             array_push($thisContextComponents, $row);
         }else{
             $txt = "entering subcontext:".$row['title']."\n";
             logIt($txt, $logIt);
+            $thisComponentConnections = getComponentConnections($row[id], $connectionForComponentQuery, $link);
+            if(count($thisComponentConnections)>0) {
+                array_push($allComponentConnections, $thisComponentConnections);
+            }
             $topContextComponentId = insertComponent("subcontext", $row['x'], $row['y'] , $targetContextId, $row['title'], "{}", 0, newGuid(), 0,$link);
             $newTopContext = insertContext($targetProjectId, $topContextComponentId, $row['title'], 0, $link);
             updateContextComponentSubContext($topContextComponentId, $newTopContext, $link);
@@ -447,6 +458,60 @@ function getComponentEvents($componentId, $eventQuery, $link){
     $eventParams = array($componentId);
     return mysqli_prepared_query($link,$eventQuery,"s",$eventParams);
 }
+
+function insertConnectionsAndRules($allConnections, $componentCrossRef, $eventCrossRef, $link)
+{
+    global $insertConnectionQuery, $mock_id, $logIt, $mock_Id, $insertRuleQuery;
+    foreach ($allConnections as $thisComponentConnection) {
+        foreach ($thisComponentConnection as $thisConnection) {
+            $oldConnectionId = $thisConnection['id'];
+            $oldStartId = $thisConnection['start_id'];
+            $newStartId = $componentCrossRef[$oldStartId];
+            $oldEndId = $thisConnection['end_id'];
+            $newEndId = $componentCrossRef[$oldEndId];
+            $newGoAhead = $thisConnection['go_ahead'];
+            $connectionRules = $thisConnection['connectionRules'];
+            if ($stmt = mysqli_prepare($link, $insertConnectionQuery)) {
+                mysqli_stmt_bind_param($stmt, "ssi", $newStartId, $newEndId, $newGoAhead);
+                /*        mysqli_stmt_execute($stmt);
+                         if(mysqli_affected_rows($link)==0){
+                             header('HTTP/1.0 400 Nothing saved - connection insert');
+                             exit;
+                         }else {
+                             $insertedConnectionId = $stmt->insert_id;
+                         }
+                 */
+                $insertedConnectionId = $mock_Id;
+                $txt="Insert connection id:".$mock_Id."-".$insertConnectionQuery."{from (".$oldStartId.")  ".$newStartId.",".$newEndId.",".$newGoAhead."}\n";
+                logIt($txt, $logIt);
+                $mock_Id++;
+                if(count($connectionRules)>0){
+                    foreach($connectionRules as $thisConnectionRule){
+                        $oldConnectionRuleEventId = $thisConnectionRule['event_id'];
+                        $newConnectionRuleEventId = $eventCrossRef[$oldConnectionRuleEventId];
+                        $newActivate = $thisConnectionRule['activate'];
+                        $newDetailRe = $thisConnectionRule['detail_re'];
+                        if ($stmt = mysqli_prepare($link, $insertRuleQuery)) {
+                            mysqli_stmt_bind_param($stmt, "sssi", $insertedConnectionId, $newConnectionRuleEventId, $newDetailRe, $newActivate);
+                            /*        mysqli_stmt_execute($stmt);
+                                     if(mysqli_affected_rows($link)==0){
+                                         header('HTTP/1.0 400 Nothing saved - rule insert');
+                                         exit;
+                                     }else {
+                                         $insertedRuleId = $stmt->insert_id;
+                                     }
+                             */
+                            $txt="Insert rule id:".$mock_Id."-".$insertRuleQuery."{".$insertedConnectionId.",".$newConnectionRuleEventId.",".$newDetailRe.",".$newActivate."}\n";
+                            logIt($txt, $logIt);
+                            $mock_Id++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 function logIt($txt, $logOn){
     global $myfile;
