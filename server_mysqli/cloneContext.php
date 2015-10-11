@@ -130,7 +130,7 @@ function traverseContext($componentQuery, $connectionQuery, $link, &$results, $c
             if(count($thisComponentConnections)>0) {
                 array_push($allComponentConnections, $thisComponentConnections);
             }
-            $topContextComponentId = insertComponent("subcontext", $row['x'], $row['y'] , $targetContextId, $row['title'], "{}", 0, newGuid(), 0,$link);
+            $topContextComponentId = insertComponent("subcontext", $row['x'], $row['y'] , $targetContextId, $row['title'], "{}", 0, newGuid(), $row['id'],$link);
             $newTopContext = insertContext($targetProjectId, $topContextComponentId, $row['title'], 0, $link);
             updateContextComponentSubContext($topContextComponentId, $newTopContext, $link);
 
@@ -492,7 +492,7 @@ function insertConnectionsAndRules($allConnections, $componentCrossRef, $eventCr
                         $newActivate = $thisConnectionRule['activate'];
                         $newDetailRe = $thisConnectionRule['detail_re'];
                         if ($stmt = mysqli_prepare($link, $insertRuleQuery)) {
-                            mysqli_stmt_bind_param($stmt, "sssi", $insertedConnectionId, $newConnectionRuleEventId, $newDetailRe, $newActivate);
+                            mysqli_stmt_bind_param($stmt, "sssi", $newConnectionRuleEventId, $insertedConnectionId,  $newDetailRe, $newActivate);
                             /*        mysqli_stmt_execute($stmt);
                                      if(mysqli_affected_rows($link)==0){
                                          header('HTTP/1.0 400 Nothing saved - rule insert');
@@ -501,7 +501,7 @@ function insertConnectionsAndRules($allConnections, $componentCrossRef, $eventCr
                                          $insertedRuleId = $stmt->insert_id;
                                      }
                              */
-                            $txt="Insert rule id:".$mock_Id."-".$insertRuleQuery."{".$insertedConnectionId.",".$newConnectionRuleEventId.",".$newDetailRe.",".$newActivate."}\n";
+                            $txt="Insert rule id:".$mock_Id."-".$insertRuleQuery."{".$newConnectionRuleEventId.",".$insertedConnectionId.",".$newDetailRe.",".$newActivate."}\n";
                             logIt($txt, $logIt);
                             $mock_Id++;
                         }
