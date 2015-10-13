@@ -207,6 +207,7 @@ create table dgpath_project (
     id            MEDIUMINT NOT NULL AUTO_INCREMENT,
     owner_context MEDIUMINT,
     proj_name     varchar(255),
+    role_id       MEDIUMINT NOT NULL,
     PRIMARY KEY (id)
 );
 insert into dgpath_project(owner_context, proj_name) values(2,'gpp8p test project #1');
