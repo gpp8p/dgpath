@@ -150,18 +150,18 @@ function insertContext($projectId, $parentId, $title, $topContext, $link){
 
     if ($stmt = mysqli_prepare($link, $insertContextQuery)) {
         mysqli_stmt_bind_param($stmt, "sssi", $title, $parentId, $projectId, $topContext);
-        /*        mysqli_stmt_execute($stmt);
+                mysqli_stmt_execute($stmt);
                 if(mysqli_affected_rows($link)==0){
                     header('HTTP/1.0 400 Nothing saved - context insert');
                     exit;
                 }else {
                     $insertedId = $stmt->insert_id;
                 }
-        */
-        $insertedId = $mock_Id;
+
+ //       $insertedId = $mock_Id;
         $txt = "Insert context:".$insertedId."-".$insertContextQuery."{".$title.",".$parentId.",".$projectId.",".$topContext."}\n";
         logIt($txt, $logIt);
-        $mock_Id++;
+//        $mock_Id++;
         return $insertedId;
     }
 
@@ -172,12 +172,12 @@ function updateContextComponentSubContext($contextComponentId, $newSubContextId,
 
     if ($stmt = mysqli_prepare($link, $updateContextComponentSubContextQuery)) {
         mysqli_stmt_bind_param($stmt, "s", $newSubContextId);
-        /*        mysqli_stmt_execute($stmt);
+                mysqli_stmt_execute($stmt);
                 if(mysqli_affected_rows($link)==0){
                     header('HTTP/1.0 400 Nothing saved - context component update');
                     exit;
                 }
-        */
+
         $txt = "Updated context component:" . $updateContextComponentSubContextQuery . "{" . $newSubContextId . "}\n";
         logIt($txt, $logIt);
     }
@@ -208,19 +208,19 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
             $newContent = $packedNewFib[0];
             if ($stmt = mysqli_prepare($link, $insertComponentQuery)) {
                 mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
-                /*        mysqli_stmt_execute($stmt);
+                        mysqli_stmt_execute($stmt);
                         if(mysqli_affected_rows($link)==0){
                             header('HTTP/1.0 400 Nothing saved - component insert');
                             exit;
                         }else {
                             $componentLastItemID = $stmt->insert_id;
                         }
-                */
-                $componentCrossReference[strval($id)] = $mock_Id;
-                $componentLastItemID = $mock_Id;
-                $txt = "Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$newContent.",".$subcontext.",".$elementId."}\n";
+
+                $componentCrossReference[strval($id)] = $componentLastItemID;
+//                $componentLastItemID = $mock_Id;
+                $txt = "Insert component id:".$componentLastItemID."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$newContent.",".$subcontext.",".$elementId."}\n";
                 logIt($txt, $logIt);
-                $mock_Id++;
+//                $mock_Id++;
 
             }
             $newEventElementIds = $packedNewFib[1];
@@ -238,19 +238,19 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
         case "subcontext":
             $elementId = newGuid();
             mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
-            /*        mysqli_stmt_execute($stmt);
+                    mysqli_stmt_execute($stmt);
                     if(mysqli_affected_rows($link)==0){
                         header('HTTP/1.0 400 Nothing saved - component insert');
                         exit;
                     }else {
                         $componentLastItemID = $stmt->insert_id;
                     }
-            */
-            $componentCrossReference[strval($id)] = $mock_Id;
-            $componentLastItemID = $mock_Id;
-            $txt="Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
+
+            $componentCrossReference[strval($id)] = $componentLastItemID;
+//            $componentLastItemID = $mock_Id;
+            $txt="Insert component id:".$componentLastItemID."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
             logIt($txt, $logIt);
-            $mock_Id++;
+//            $mock_Id++;
             $subContextEvents = getEventsFromComponentId($id, $link);
             if($id !='0') {
                 foreach ($subContextEvents as $thisSubContextEvent) {
@@ -270,20 +270,20 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
 
             $elementId = newGuid();
             mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
-            /*        mysqli_stmt_execute($stmt);
+                    mysqli_stmt_execute($stmt);
                     if(mysqli_affected_rows($link)==0){
                         header('HTTP/1.0 400 Nothing saved - component insert');
                         exit;
                     }else {
                         $componentLastItemID = $stmt->insert_id;
                     }
-            */
-            $componentCrossReference[strval($id)] = $mock_Id;
-            $componentLastItemID = $mock_Id;
-            $txt="Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
+
+            $componentCrossReference[strval($id)] = $componentLastItemID;
+  //          $componentLastItemID = $mock_Id;
+            $txt="Insert component id:".$componentLastItemID."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
             logIt($txt, $logIt);
-            $mock_Id++;
-            $mock_Id++;
+//            $mock_Id++;
+//            $mock_Id++;
             $docEvents = getEventsFromComponentId($id, $link);
             foreach($docEvents as $thisDocEvent){
                 $thisOldEventId = $thisDocEvent['id'];
@@ -307,19 +307,19 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
             $newMcContent = json_encode($newMcContentUnpacked);
 
             mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
-            /*        mysqli_stmt_execute($stmt);
+                    mysqli_stmt_execute($stmt);
                     if(mysqli_affected_rows($link)==0){
                         header('HTTP/1.0 400 Nothing saved - component insert');
                         exit;
                     }else {
                         $componentLastItemID = $stmt->insert_id;
                     }
-            */
-            $componentCrossReference[strval($id)] = $mock_Id;
-            $componentLastItemID = $mock_Id;
-            $txt="Insert component id:".$mock_Id."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$newMcContent.",".$subcontext.",".$elementId."}\n";
+
+            $componentCrossReference[strval($id)] = $componentLastItemID;
+//            $componentLastItemID = $mock_Id;
+            $txt="Insert component id:".$componentLastItemID."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$newMcContent.",".$subcontext.",".$elementId."}\n";
             logIt($txt, $logIt);
-            $mock_Id++;
+//            $mock_Id++;
             $docEvents = getEventsFromComponentId($id, $link);
             foreach ($docEvents as $thisDocEvent) {
                 $thisOldEventId = $thisDocEvent['id'];
@@ -402,18 +402,18 @@ function insertNewEvent($componentId, $label, $navigation, $eventType, $showSub,
 
     if ($stmt = mysqli_prepare($link, $insertEventQuery)) {
         mysqli_stmt_bind_param($stmt, "ssisiss", $componentId, $label, $navigation, $eventType, $showSub, $subParam, $elementId);
-        /*        mysqli_stmt_execute($stmt);
+                mysqli_stmt_execute($stmt);
                 if(mysqli_affected_rows($link)==0){
                     header('HTTP/1.0 400 Nothing saved - component insert');
                     exit;
                 }else {
                     $insertedEventId = $stmt->insert_id;
                 }
-        */
-        $insertedEventId = $mock_Id;
-        $txt="Insert event id:".$mock_Id."-".$insertEventQuery."{".$componentId.",".$label.",".$navigation.",".$eventType.",".$showSub.",".$subParam.",".$elementId."}\n";
+
+//        $insertedEventId = $mock_Id;
+        $txt="Insert event id:".$insertedEventId."-".$insertEventQuery."{".$componentId.",".$label.",".$navigation.",".$eventType.",".$showSub.",".$subParam.",".$elementId."}\n";
         logIt($txt, $logIt);
-        $mock_Id++;
+//        $mock_Id++;
         return $insertedEventId;
     }
 
@@ -473,18 +473,18 @@ function insertConnectionsAndRules($allConnections, $componentCrossRef, $eventCr
             $connectionRules = $thisConnection['connectionRules'];
             if ($stmt = mysqli_prepare($link, $insertConnectionQuery)) {
                 mysqli_stmt_bind_param($stmt, "ssi", $newStartId, $newEndId, $newGoAhead);
-                /*        mysqli_stmt_execute($stmt);
+                        mysqli_stmt_execute($stmt);
                          if(mysqli_affected_rows($link)==0){
                              header('HTTP/1.0 400 Nothing saved - connection insert');
                              exit;
                          }else {
                              $insertedConnectionId = $stmt->insert_id;
                          }
-                 */
-                $insertedConnectionId = $mock_Id;
-                $txt="Insert connection id:".$mock_Id."-".$insertConnectionQuery."{from (".$oldStartId.")  ".$newStartId.",".$newEndId.",".$newGoAhead."}\n";
+
+//                $insertedConnectionId = $mock_Id;
+                $txt="Insert connection id:".$insertedConnectionId."-".$insertConnectionQuery."{from (".$oldStartId.")  ".$newStartId.",".$newEndId.",".$newGoAhead."}\n";
                 logIt($txt, $logIt);
-                $mock_Id++;
+//                $mock_Id++;
                 if(count($connectionRules)>0){
                     foreach($connectionRules as $thisConnectionRule){
                         $oldConnectionRuleEventId = $thisConnectionRule['event_id'];
@@ -493,17 +493,17 @@ function insertConnectionsAndRules($allConnections, $componentCrossRef, $eventCr
                         $newDetailRe = $thisConnectionRule['detail_re'];
                         if ($stmt = mysqli_prepare($link, $insertRuleQuery)) {
                             mysqli_stmt_bind_param($stmt, "sssi", $newConnectionRuleEventId, $insertedConnectionId,  $newDetailRe, $newActivate);
-                            /*        mysqli_stmt_execute($stmt);
+                                    mysqli_stmt_execute($stmt);
                                      if(mysqli_affected_rows($link)==0){
                                          header('HTTP/1.0 400 Nothing saved - rule insert');
                                          exit;
                                      }else {
                                          $insertedRuleId = $stmt->insert_id;
                                      }
-                             */
-                            $txt="Insert rule id:".$mock_Id."-".$insertRuleQuery."{".$newConnectionRuleEventId.",".$insertedConnectionId.",".$newDetailRe.",".$newActivate."}\n";
+
+                            $txt="Insert rule id:".$insertedRuleId."-".$insertRuleQuery."{".$newConnectionRuleEventId.",".$insertedConnectionId.",".$newDetailRe.",".$newActivate."}\n";
                             logIt($txt, $logIt);
-                            $mock_Id++;
+//                            $mock_Id++;
                         }
                     }
                 }
