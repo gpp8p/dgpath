@@ -149,7 +149,7 @@ function insertContext($projectId, $parentId, $title, $topContext, $link){
     global $mock_Id,$logIt,  $insertContextQuery;
 
     if ($stmt = mysqli_prepare($link, $insertContextQuery)) {
-        mysqli_stmt_bind_param($stmt, "sssi", $title, $parentId, $projectId, $topContext);
+        mysqli_stmt_bind_param($stmt, "sssi", $title,  $projectId, $parentId,$topContext);
                 mysqli_stmt_execute($stmt);
                 if(mysqli_affected_rows($link)==0){
                     header('HTTP/1.0 400 Nothing saved - context insert');
