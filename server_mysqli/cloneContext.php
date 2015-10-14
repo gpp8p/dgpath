@@ -41,7 +41,7 @@ $eventFromComponentIdQuery = "select id, label, navigation, event_type, show_sub
 
 $insertContextQuery = "INSERT INTO dgpath_context(title, project, parent, topcontext) values (?,?,?,?)";
 
-$updateContextComponentSubContextQuery = "UPDATE dgpath_component set subcontext = ?";
+$updateContextComponentSubContextQuery = "UPDATE dgpath_component set subcontext = ? where id = ?";
 
 $insertEventQuery = "INSERT INTO dgpath_events (component_id, label, navigation, event_type, show_sub, sub_param, elementId) values(?,?,?,?,?,?,?)";
 $insertConnectionQuery = "INSERT INTO dgpath_connection (start_id, end_id, go_ahead) values (?,?,?)";
@@ -82,7 +82,8 @@ updateContextComponentSubContext($topContextComponentId, $newTopContext, $link);
 $newTcLabel = $newContextTitle." entered by user";
 $newTcNav = 1;
 insertNewEvent($topContextComponentId, $newTcLabel, $newTcNav, $contextEntered, 0, "", $elementId, $link);
-
+echo "ok";
+exit;
 
 $globalResult = traverseContext($componentQuery, $connectionQuery, $link, $traversalResults, $ctx, $targetFolderParent, $newTopContext, $projectId, $newContextTitle);
 insertConnectionsAndRules($allComponentConnections, $componentCrossReference, $eventCrossReference, $link);
@@ -171,7 +172,7 @@ function updateContextComponentSubContext($contextComponentId, $newSubContextId,
     global $mock_Id, $logIt, $updateContextComponentSubContextQuery;
 
     if ($stmt = mysqli_prepare($link, $updateContextComponentSubContextQuery)) {
-        mysqli_stmt_bind_param($stmt, "s", $newSubContextId);
+        mysqli_stmt_bind_param($stmt, "ss", $newSubContextId,$contextComponentId);
                 mysqli_stmt_execute($stmt);
                 if(mysqli_affected_rows($link)==0){
                     header('HTTP/1.0 400 Nothing saved - context component update');
@@ -237,15 +238,16 @@ function insertComponent($existingComponentType, $existingComponentXpos, $existi
             break;
         case "subcontext":
             $elementId = newGuid();
-            mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
-                    mysqli_stmt_execute($stmt);
-                    if(mysqli_affected_rows($link)==0){
-                        header('HTTP/1.0 400 Nothing saved - component insert');
-                        exit;
-                    }else {
-                        $componentLastItemID = $stmt->insert_id;
-                    }
-
+            if ($stmt = mysqli_prepare($link, $insertComponentQuery)) {
+                mysqli_stmt_bind_param($stmt, "ssssssss", $type, $xpos, $ypos, $context, $title, $content, $subcontext, $elementId);
+                mysqli_stmt_execute($stmt);
+                if (mysqli_affected_rows($link) == 0) {
+                    header('HTTP/1.0 400 Nothing saved - component insert');
+                    exit;
+                } else {
+                    $componentLastItemID = $stmt->insert_id;
+                }
+            }
             $componentCrossReference[strval($id)] = $componentLastItemID;
 //            $componentLastItemID = $mock_Id;
             $txt="Insert component id:".$componentLastItemID."-".$insertComponentQuery."{".$type.",".$xpos.",".$ypos.",".$context.",".$title.",".$content.",".$subcontext.",".$elementId."}\n";
