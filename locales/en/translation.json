@@ -156,6 +156,7 @@
         "deleteFolder":"Delete",
         "cloneSubContext": "Clone this Sub-Context to the Library",
         "cloneComponent": "Clone this component to the Library",
+        "copySubContext": "Copy from the Library",
         "selectClick": "(Click here to select)",
         "ruSure": "Are you sure you want to clone ",
         "ruSureTo": "to ",
