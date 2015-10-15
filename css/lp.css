@@ -270,6 +270,22 @@ select {
     text-align: left;
 }
 
+.collectionSubContextCss {
+    background-image: url(../images/subcontext_small.png);
+    background-repeat: no-repeat;
+    background-position: 0 0em;
+    border-radius: 5px 5px 5px 5px;
+    padding-left: 1.5em;
+    display: block;
+    color: #000000;
+    font-size:14px;
+    font-weight:bold;
+    font-family: "Arial";
+    padding-left: 25px;
+    padding-bottom:5px;
+    text-align: left;
+}
+
 .selectLinkCss {
     color: #044bee;
     font-size:10px;
