@@ -162,6 +162,7 @@
         "ruSureTo": "to ",
         "cloneYes": "Go Ahead!",
         "cloneCancel": "Cancel",
+        "descriptionLabel": "What is this:",
         "cancelCollectionSelect": "Cancel",
         "deleteCollection":"Delete",
         "newContextName":"New context name:"

@@ -50,6 +50,7 @@ $insertRuleQuery = "INSERT INTO dgpath_rules (event_id, connection_id, detail_re
 $traversalResults = array();
 $ctx = $_POST['subcontext'];
 $target = $_POST['target'];
+$description = $_POST['description'];
 $newContextTitle = $_POST['newContextName'];
 $folderHierarchy = explode("_", $target);
 $projectPiece = $folderHierarchy[0];
@@ -75,8 +76,13 @@ $componentCrossReference = array();
 $eventCrossReference = array();
 $allComponentConnections = array();
 $mock_Id = 679;
+if($description !=NULL){
+    $thisDescription = "{"."\"description\":\"".$description."\"}";
+}else{
+    $thisDescription="{}";
+}
 
-$topContextComponentId = insertComponent("subcontext", 0, 0, $targetContext, $newContextTitle, "{}", 0, newGuid(), 0,$link);
+$topContextComponentId = insertComponent("subcontext", 0, 0, $targetContext, $newContextTitle, $thisDescription, 0, newGuid(), 0,$link);
 $newTopContext = insertContext($projectId, $topContextComponentId, $newContextTitle, 0, $link);
 updateContextComponentSubContext($topContextComponentId, $newTopContext, $link);
 $newTcLabel = $newContextTitle." entered by user";
