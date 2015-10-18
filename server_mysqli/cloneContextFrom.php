@@ -51,6 +51,8 @@ $contextLookupQuery = "SELECT project from dgpath_context where id = ?";
 
 $traversalResults = array();
 
+$targetContextId = $_POST['copyTarget'];
+
 $componentParams = array($targetContextId);
 $contextFound=FALSE;
 $contextQueryResult = mysqli_prepared_query($link,$contextLookupQuery,"s",$componentParams);
@@ -62,6 +64,9 @@ if(!$contextFound){
     header('HTTP/1.0 400 context not found');
     exit;
 }
+
+$targetComponentX = $_POST['componentX'];
+$targetComponentY = $_POST['componentY'];
 
 
 
