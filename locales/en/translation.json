@@ -163,6 +163,7 @@
         "cloneYes": "Go Ahead!",
         "cloneCancel": "Cancel",
         "descriptionLabel": "What is this:",
+        "targetTitle": "New name:",
         "cancelCollectionSelect": "Cancel",
         "deleteCollection":"Delete",
         "newContextName":"New context name:"
