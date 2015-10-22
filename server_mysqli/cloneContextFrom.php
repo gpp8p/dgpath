@@ -71,7 +71,7 @@ $targetComponentY = $_POST['componentY'];
 
 
 
-
+/*
 $ctx = $_POST['subcontext'];
 $target = $_POST['target'];
 $description = $_POST['description'];
@@ -84,7 +84,17 @@ $thisFolderReference = $folderHierarchy[$folderHierarchySize-1];
 $targetFolderContextPos = strrpos($thisFolderReference, "-");
 $targetFolderParent = substr($thisFolderReference, 2, $targetFolderContextPos-2);
 $targetContext = substr($thisFolderReference, $targetFolderContextPos+1);
+*/
 
+$copyTarget = $_POST['copyTarget'];
+$copySource = $_POST['copySource'];
+$componentX = $_POST['componentX'];
+$componentY = $_POST['componentY'];
+$description = $_POST['description'];
+$projectId = $_POST['thisProject'];
+$contextLabel=$_POST['thisContextLabel'];
+echo('ok');
+exit;
 
 
 //$ctx = 155;
@@ -106,15 +116,15 @@ if($description !=NULL){
     $thisDescription="{}";
 }
 
-$topContextComponentId = insertComponent("subcontext", 0, 0, $targetContext, $newContextTitle, $thisDescription, 0, newGuid(), 0,$link);
-$newTopContext = insertContext($projectId, $topContextComponentId, $newContextTitle, 0, $link);
+$topContextComponentId = insertComponent("subcontext", $componentX, $componentY, $targetContext, $newContextTitle, $thisDescription, 0, newGuid(), 0,$link);
+$newTopContext = insertContext($projectId, $topContextComponentId, $contextLabel, 0, $link);
 updateContextComponentSubContext($topContextComponentId, $newTopContext, $link);
 $newTcLabel = $newContextTitle." entered by user";
 $newTcNav = 1;
 insertNewEvent($topContextComponentId, $newTcLabel, $newTcNav, $contextEntered, 0, "", $elementId, $link);
 
 
-$globalResult = traverseContext($componentQuery, $connectionQuery, $link, $traversalResults, $ctx, $targetFolderParent, $newTopContext, $projectId, $newContextTitle);
+$globalResult = traverseContext($componentQuery, $connectionQuery, $link, $traversalResults, $copySource, $topContextComponentId, $newTopContext, $projectId, $newContextTitle);
 insertConnectionsAndRules($allComponentConnections, $componentCrossReference, $eventCrossReference, $link);
 
 

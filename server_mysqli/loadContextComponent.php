@@ -18,7 +18,7 @@ require_once '../server_mysqli/preparedQuery.php';
 $contextId = $_POST['contextId'];
 
 
-$query = "SELECT dgpath_component.title, dgpath_component.type, dgpath_component.x, dgpath_component.y, dgpath_component.context, dgpath_component.content, dgpath_component.subcontext, dgpath_component.elementId "
+$query = "SELECT dgpath_component.title, dgpath_component.type, dgpath_component.x, dgpath_component.y, dgpath_component.context, dgpath_component.content, dgpath_component.subcontext, dgpath_component.elementId, dgpath_context.project "
 ."from dgpath_component, dgpath_context "
 ."where dgpath_context.parent = dgpath_component.id "
 ."and dgpath_context.id = ?";
@@ -46,12 +46,13 @@ foreach($componentQueryResult as $row){
     $componentProjectName = $row['proj_name'];
     $componentSubContext = $row['subcontext'];
     $componentElementId = $row['elementId'];
+    $componentProject = $row['project'];
     if(is_null($componentSubContext)){
         $componentSubContext = "";
     }
 
     $dataFound=true;
-    $thisComponent = array('title'=>$component_title, 'id'=>$componentId, 'x'=>$componentXpos, 'y'=>$componentYpos, 'type'=>$componentType, 'context'=>$componentContext, 'subcontext'=>$componentSubContext,'content'=>$componentContent, 'elementId'=>$componentElementId);
+    $thisComponent = array('title'=>$component_title, 'id'=>$componentId, 'x'=>$componentXpos, 'y'=>$componentYpos, 'type'=>$componentType, 'context'=>$componentContext, 'subcontext'=>$componentSubContext,'content'=>$componentContent, 'project'=>$componentProject, 'elementId'=>$componentElementId);
 
 }
 if($dataFound){
