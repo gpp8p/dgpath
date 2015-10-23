@@ -49,6 +49,8 @@ $insertRuleQuery = "INSERT INTO dgpath_rules (event_id, connection_id, detail_re
 
 $contextLookupQuery = "SELECT project from dgpath_context where id = ?";
 
+
+
 $traversalResults = array();
 
 $targetContextId = $_POST['copyTarget'];
@@ -93,8 +95,7 @@ $componentY = $_POST['componentY'];
 $description = $_POST['description'];
 $projectId = $_POST['thisProject'];
 $contextLabel=$_POST['thisContextLabel'];
-echo('ok');
-exit;
+
 
 
 //$ctx = 155;
@@ -116,8 +117,8 @@ if($description !=NULL){
     $thisDescription="{}";
 }
 
-$topContextComponentId = insertComponent("subcontext", $componentX, $componentY, $targetContext, $newContextTitle, $thisDescription, 0, newGuid(), 0,$link);
-$newTopContext = insertContext($projectId, $topContextComponentId, $contextLabel, 0, $link);
+$topContextComponentId = insertComponent("subcontext", $componentX, $componentY, $copyTarget, $contextLabel, $thisDescription, 0, newGuid(), 0,$link);
+$newTopContext = insertContext($targetProject, $topContextComponentId, $contextLabel, 0, $link);
 updateContextComponentSubContext($topContextComponentId, $newTopContext, $link);
 $newTcLabel = $newContextTitle." entered by user";
 $newTcNav = 1;
