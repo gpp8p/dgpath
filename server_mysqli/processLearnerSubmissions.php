@@ -12,9 +12,11 @@ require_once '../server_mysqli/dbparams.php';
 require_once '../server_mysqli/preparedQuery.php';
 require_once '../server_mysqli/loadContent.php';
 require_once '../server_mysqli/evtypes.php';
+require_once '../server_mysqli/recordUserEvents.php';
 
 
-
+session_start();
+$thisSessionId = session_id();
 
 $jsonSubmission = $_POST['submission'];
 $submission = json_decode($jsonSubmission);
@@ -243,6 +245,11 @@ if(count($connectionsOpenToPass)==1){
     loadContent($nextStartingComponentId,$link,$loadedComponents);
     $returnData = array('returnType'=>"1pathOpen", 'data'=>$loadedComponents);
     $returnDataJson = json_encode($returnData);
+
+    $submissionBatchId = recordSuccessfulScreenTransfer($thisSessionId, $nextComponentId);
+    foreach($submission as $thisSubmittedEvent){
+        recordThisUserEvent($thisSubmittedEvent, $thisSessionId, $submissionBatchId);
+    }
     echo($returnDataJson);
 }
 

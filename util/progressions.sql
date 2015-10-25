@@ -125,13 +125,15 @@ drop table if exists dgpath_user_events;
 create table dgpath_user_events(
   id            MEDIUMINT NOT NULL AUTO_INCREMENT,
   component_id  MEDIUMINT NOT NULL,
-  traversal_id  MEDIUMINT NOT NULL,
+  traversal_id  varchar(255) NOT NULL,
   event_type    MEDIUMINT NOT NULL,
   project_id    mediumint not null,
   event_time    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   user_id       MEDIUMINT NOT NULL,
   detail        TEXT,
   priority      MEDIUMINT,
+  status        MEDIUMINT NOT NULL,
+  submission_batch_id mediumint(9),
   FOREIGN KEY(component_id) references dgpath_component(id),
   FOREIGN KEY(traversal_id) references dgpath_agent_traversal(id),
   PRIMARY KEY (id)

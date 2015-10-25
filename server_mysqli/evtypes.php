@@ -28,10 +28,11 @@ $componentViewed = 18;
 $tfAnswer=19;
 $scoreTotalMatched=21;
 
+
 $userLoggedIn=23;
 $componentsView=24;
 $mcClicked=25;
-
+$linkTransfer= 70;
 
 $entryEvents = "(".$documentViewed.",".$mcViewed.",".$tfViewed.",".$contextEntered.",".$entryDoorEntered.")";
 $responseEvents = array($fibAnswered,$tfClicked,$mcClicked);
