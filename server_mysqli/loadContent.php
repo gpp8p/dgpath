@@ -17,6 +17,8 @@ function loadContent($componentId, $link, &$results){
             ."and dgpath_rules.event_id = dgpath_events.id "
             ."and dgpath_events.component_id = ?";
 
+    $parentGoAheadConnectionQuery = "select dgpath_connection.go_ahead as go_ahead, dgpath_connection.end_id as end_id from dgpath_connection where dgpath_connection.start_id in (select dgpath_context.parent from dgpath_context, dgpath_component where dgpath_context.id = dgpath_component.context and dgpath_component.id = ?)";
+
 
     $thisConnectionQuery = "select dgpath_connection.end_id from dgpath_connection "
         ."where dgpath_connection.start_id = ? "
@@ -76,8 +78,17 @@ function loadContent($componentId, $link, &$results){
                             $connectionFound = true;
                             $componentId = $parentLink;
                         } else {
+                            $parentQueryResult = mysqli_prepared_query($link, $parentGoAheadConnectionQuery, "s", $connectionParams);
                             $connectionFound = false;
-                            $goingAhead = false;
+                            foreach($parentQueryResult as $thisParentQueryResult){
+                                $connectionFound = true;
+                                if($thisParentQueryResult['go_ahead']==1){
+                                    $componentId = $thisParentQueryResult['end_id'];
+                                    $goingAhead=true;
+                                }else{
+                                    $goingAhead = false;
+                                }
+                            }
                         }
                     } else if ($thisType === 'branch') {
                         $connectedComponentIds = array();
