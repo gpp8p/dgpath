@@ -36,11 +36,22 @@ $linkTransfer= 70;
 
 $entryEvents = "(".$documentViewed.",".$mcViewed.",".$tfViewed.",".$contextEntered.",".$entryDoorEntered.")";
 $responseEvents = array($fibAnswered,$tfClicked,$mcClicked);
-
+// priority vars
 $high = 5;
 $medium = 4;
 $lowMedium = 3;
 $low = 2;
 $veryLow = 2;
 $archive = 0;
+//status vars
+$awaitingAction = 100;
+$actedUpon = 101;
+$infoKeepVisible = 102;
+$notCurrentlyRelevent = 103;
+
+$studentRole = 10;
+$secondaryInstructorRole = 20;
+$instructorRole = 30;
+$designerRole = 40;
+$adminRole=50;
 

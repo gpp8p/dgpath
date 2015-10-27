@@ -28,9 +28,33 @@ function recordSuccessfulScreenTransfer($thisSessionId, $nextComponentId){
     return $transferRecordId;
 }
 
-function recordLogin($thisSessionId, $thisUserId){
+function recordLogin($traversalId, $userId, $userEid){
 
-    $loginEventTraversalQuery = "INSERT session, user_id into dgpath_agent_traversal values (?,?)";
+    GLOBAL $link, $userLoggedIn, $veryLow, $notCurrentlyRelevent, $adminRole;
+    $thisTraversalId = $traversalId;
+    $thisUserId = $userId;
+    $thisEventType = $userLoggedIn;
+    $thisUserName = $userEid." logged in at:".strftime("%F %T");
+    $thisDetailArray = array("msg"=>$thisUserName);
+    $thisDetail = json_encode($thisDetailArray);
+    $thisProjectId = 0;
+    $thisPriority = $veryLow;
+    $thisStatus = $notCurrentlyRelevent;
+    $thisBatchId = 0;
+    $thisTraversal = 0;
+    $thisAttenTo = $adminRole;
+
+    $loginEventQuery = "INSERT component_id, user_id, detail, event_type, project_id, priority, status, submission_batch_id, traversal_id, atten_to values (?,?,?,?,?,?,?,?,?,?)";
+    if ($stmt = mysqli_prepare($link, $loginEventQuery)) {
+
+        mysqli_stmt_bind_param($stmt, "ssssssssss", $thisUserId, $thisDetail, $thisEventType ,$thisProjectId, $thisPriority, $thisStatus, $thisBatchId, $thisTraversal, $thisAttenTo );
+        mysqli_stmt_execute($stmt);
+        if(mysqli_affected_rows($link)==0){
+            header('HTTP/1.0 400 Nothing saved - agent_traversal insert');
+            exit;
+        }
+    }
+    return true;
 
 
 }

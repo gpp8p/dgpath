@@ -26,7 +26,7 @@ $loginSuccess = false;
 $loginQuery = "SELECT id FROM dgpath_user where user_eid=? and password=?";
 $loginEventTraversalQuery = "INSERT session, user_id into dgpath_agent_traversal values (?,?)";
 $loginParams = array($username, $password);
-$queryResult = mysqli_prepared_query($link,$query,"ss",$loginParams);
+$queryResult = mysqli_prepared_query($link,$loginQuery,"ss",$loginParams);
 $loginSuccess = false;
 $logSuccess = false;
 $traversalEntrySuccess=false;
@@ -47,7 +47,7 @@ if($loginSuccess){
         }
 
     }
-    $logSuccess = recordLogin($traversalId, $thisUserId);
+    $logSuccess = recordLogin($traversalId, $thisUserId,$username );
 
     echo('1');
 }else{
