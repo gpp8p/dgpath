@@ -12,6 +12,8 @@ require_once '../server_mysqli/dbparams.php';
 require_once '../server_mysqli/preparedQuery.php';
 require_once '../server_mysqli/loadContent.php';
 require_once '../server_mysqli/evtypes.php';
+require_once '../server_mysqli/recordUserEvents.php';
+
 
 function recordThisUserEvent($thisEvent, $thisSessionId){
 
@@ -31,6 +33,7 @@ function recordSuccessfulScreenTransfer($thisSessionId, $nextComponentId){
 function recordLogin($traversalId, $userId, $userEid){
 
     GLOBAL $link, $userLoggedIn, $veryLow, $notCurrentlyRelevent, $adminRole;
+    $thisComponentId = 0;
     $thisTraversalId = $traversalId;
     $thisUserId = $userId;
     $thisEventType = $userLoggedIn;
@@ -42,19 +45,22 @@ function recordLogin($traversalId, $userId, $userEid){
     $thisStatus = $notCurrentlyRelevent;
     $thisBatchId = 0;
     $thisTraversal = 0;
+    $thisContextId = 0;
     $thisAttenTo = $adminRole;
 
-    $loginEventQuery = "INSERT component_id, user_id, detail, event_type, project_id, priority, status, submission_batch_id, traversal_id, atten_to values (?,?,?,?,?,?,?,?,?,?)";
+    $loginEventQuery = "INSERT into dgpath_user_events (component_id, user_id, detail, event_type, project_id, priority, status, submission_batch_id, traversal_id, atten_to, context_id) values (?,?,?,?,?,?,?,?,?,?,?)";
     if ($stmt = mysqli_prepare($link, $loginEventQuery)) {
 
-        mysqli_stmt_bind_param($stmt, "ssssssssss", $thisUserId, $thisDetail, $thisEventType ,$thisProjectId, $thisPriority, $thisStatus, $thisBatchId, $thisTraversal, $thisAttenTo );
+        mysqli_stmt_bind_param($stmt, "sssssssssss",$thisComponentId, $thisUserId, $thisDetail, $thisEventType ,$thisProjectId, $thisPriority, $thisStatus, $thisBatchId, $thisTraversal, $thisAttenTo, $thisContextId );
         mysqli_stmt_execute($stmt);
-        if(mysqli_affected_rows($link)==0){
+        if(mysqli_stmt_affected_rows($stmt)==0){
             header('HTTP/1.0 400 Nothing saved - agent_traversal insert');
             exit;
         }
     }
     return true;
+}
 
+function recordSelectionAuthoring($contextId, $traversalId, $userId){
 
 }

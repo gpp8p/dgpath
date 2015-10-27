@@ -11,6 +11,7 @@ require_once '../server_mysqli/jsonED.php';
 require_once '../server_mysqli/dbparams.php';
 require_once '../server_mysqli/preparedQuery.php';
 require_once '../server_mysqli/evtypes.php';
+require_once '../server_mysqli/recordUserEvents.php';
 
 $username = $_POST['username'];
 $password = $_POST['password'];
@@ -24,7 +25,7 @@ if (mysqli_connect_errno()) {
 $loginSuccess = false;
 
 $loginQuery = "SELECT id FROM dgpath_user where user_eid=? and password=?";
-$loginEventTraversalQuery = "INSERT session, user_id into dgpath_agent_traversal values (?,?)";
+$loginEventTraversalQuery = "INSERT into dgpath_agent_traversal (session, user_id)  values (?,?)";
 $loginParams = array($username, $password);
 $queryResult = mysqli_prepared_query($link,$loginQuery,"ss",$loginParams);
 $loginSuccess = false;

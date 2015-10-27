@@ -33,6 +33,7 @@ $userLoggedIn=23;
 $componentsView=24;
 $mcClicked=25;
 $linkTransfer= 70;
+$authorSelect=71;
 
 $entryEvents = "(".$documentViewed.",".$mcViewed.",".$tfViewed.",".$contextEntered.",".$entryDoorEntered.")";
 $responseEvents = array($fibAnswered,$tfClicked,$mcClicked);
