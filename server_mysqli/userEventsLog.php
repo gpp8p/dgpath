@@ -14,7 +14,7 @@ require_once '../server_mysqli/loadContent.php';
 require_once '../server_mysqli/evtypes.php';
 require_once '../server_mysqli/recordUserEvents.php';
 
-$traversalIdQuery = "SELECT id, user_id from dgpath_agent_traversal where session = ?";
+$traversalIdQuery = "SELECT id, user_id from dgpath_agent_traversal where session = ? order by login_time";
 
 
 session_start();
@@ -41,7 +41,8 @@ if(!$traversalFound){
 switch($logFunction){
 
     case "authorSelect":
-        recordSelectionAuthoring($contextId, $traversalId, $userId);
+        $contextId = $_POST['contextId'];
+        recordSelectionAuthoring($contextId, $thisTraversalId, $thisUserId);
         break;
 
     default:
@@ -54,13 +55,3 @@ switch($logFunction){
 
 
 
-$thisEventType = $userLoggedIn;
-$thisUserName = $userEid." logged in at:".strftime("%F %T");
-$thisDetailArray = array("msg"=>$thisUserName);
-$thisDetail = json_encode($thisDetailArray);
-$thisProjectId = 0;
-$thisPriority = $veryLow;
-$thisStatus = $notCurrentlyRelevent;
-$thisBatchId = 0;
-$thisTraversal = 0;
-$thisAttenTo = $adminRole;
