@@ -6,7 +6,7 @@ CREATE TABLE `dgpath_agent_traversal` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `session_index` (`session`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=50 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=65 DEFAULT CHARSET=latin1;
 CREATE TABLE `dgpath_cando_entity` (
   `id` mediumint(9) NOT NULL AUTO_INCREMENT,
   `entity_id` mediumint(9) NOT NULL,
@@ -139,9 +139,10 @@ CREATE TABLE `dgpath_user_events` (
   `submission_batch_id` mediumint(9) DEFAULT NULL,
   `traversal_id` mediumint(9) NOT NULL,
   `atten_to` mediumint(9) DEFAULT NULL,
+  `context_id` mediumint(9) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `component_id` (`component_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=36 DEFAULT CHARSET=latin1;
 CREATE TABLE `dgpath_user_in_group` (
   `id` mediumint(9) NOT NULL AUTO_INCREMENT,
   `user_id` mediumint(9) NOT NULL,
