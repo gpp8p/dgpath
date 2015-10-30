@@ -15,6 +15,7 @@ require_once '../server_mysqli/recordUserEvents.php';
 
 $username = $_POST['username'];
 $password = $_POST['password'];
+$_SESSION['eid'] = $username;
 $thisSessionId = session_id();
 //$link = mysqli_connect("127.0.0.1", "gpp8p", "kal1ca7", "dgpath");
 

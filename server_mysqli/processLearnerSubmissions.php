@@ -20,6 +20,8 @@ $thisSessionId = session_id();
 
 $jsonSubmission = $_POST['submission'];
 $submission = json_decode($jsonSubmission);
+$thisContext = $_POST['context'];
+$submittingComponent = $_POST['submittingComponent'];
 
 $eventDataWasMatched = 0;
 $eventDataNotMatched=1;
@@ -246,10 +248,12 @@ if(count($connectionsOpenToPass)==1){
     $returnData = array('returnType'=>"1pathOpen", 'data'=>$loadedComponents);
     $returnDataJson = json_encode($returnData);
 
-    $submissionBatchId = recordSuccessfulScreenTransfer($thisSessionId, $nextComponentId);
+    $submissionBatchId = recordSuccessfulScreenTransfer($thisSessionId, $nextComponentId, $thisSessionId, $thisContext, $submittingComponent);
+    /*
     foreach($submission as $thisSubmittedEvent){
         recordThisUserEvent($thisSubmittedEvent, $thisSessionId, $submissionBatchId);
     }
+    */
     echo($returnDataJson);
 }
 
