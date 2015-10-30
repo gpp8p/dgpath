@@ -248,7 +248,7 @@ if(count($connectionsOpenToPass)==1){
     $returnData = array('returnType'=>"1pathOpen", 'data'=>$loadedComponents);
     $returnDataJson = json_encode($returnData);
 
-    $submissionBatchId = recordSuccessfulScreenTransfer($thisSessionId, $nextComponentId, $thisSessionId, $thisContext, $submittingComponent);
+    $submissionBatchId = recordSuccessfulScreenTransfer($thisSessionId, $nextStartingComponentId, $thisContext, $submittingComponent);
     /*
     foreach($submission as $thisSubmittedEvent){
         recordThisUserEvent($thisSubmittedEvent, $thisSessionId, $submissionBatchId);

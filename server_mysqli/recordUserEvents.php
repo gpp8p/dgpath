@@ -23,7 +23,7 @@ function recordThisUserEvent($thisEvent, $thisSessionId){
 
 }
 
-function recordSuccessfulScreenTransfer($thisSessionId, $nextComponentId,$thisContext, $submittingComponent){
+function recordSuccessfulScreenTransfer($thisSessionId, $nextComponentId, $thisContext, $submittingComponent){
     GLOBAL $linkTransfer, $medium, $infoKeepVisible, $adminRole, $link;
 
     $thisContextId = $thisContext;
@@ -47,7 +47,7 @@ function recordSuccessfulScreenTransfer($thisSessionId, $nextComponentId,$thisCo
     $logEventQuery = "INSERT into dgpath_user_events (component_id, user_id, detail, event_type, project_id, priority, status, submission_batch_id, traversal_id, atten_to, context_id) values (?,?,?,?,?,?,?,?,?,?,?)";
     if ($stmt = mysqli_prepare($link, $logEventQuery)) {
 
-        mysqli_stmt_bind_param($stmt, "sssssssssss",$thisComponentId, $thisUserId, $thisDetail, $thisEventType ,$thisProjectId, $thisPriority, $thisStatus, $thisBatchId, $thisTraversal, $thisAttenTo, $thisContextId );
+        mysqli_stmt_bind_param($stmt, "sssssssssss",$thisComponentId, $thisUserId, $thisDetail, $thisEventType ,$thisProjectId, $thisPriority, $thisStatus, $thisBatchId, $thisTraversal[0], $thisAttenTo, $thisContextId );
         mysqli_stmt_execute($stmt);
         if(mysqli_stmt_affected_rows($stmt)==0){
             header('HTTP/1.0 400 Nothing saved - agent_traversal insert');
