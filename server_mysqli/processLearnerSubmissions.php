@@ -70,6 +70,8 @@ $summationActivityHigh=35;
 
 $componentEvents = array();
 $submittedEvents = array();
+$componentIdsSubmittedFor = array();
+$expectedEventsByElement = array();
 // get all the events for each component involved in the submission.  Each component is identified by a componentViewed event.
 foreach($submission as $s){
     $thisSubmission = get_object_vars($s);
@@ -78,6 +80,7 @@ foreach($submission as $s){
         $query = $query."where dgpath_rules.event_id = dgpath_events.id ";
         $query = $query."and dgpath_events.component_id = ?";
         $componentId = $thisSubmission['componentId'];
+        array_push($componentIdsSubmittedFor, $componentId);
         $connectionParams = array($componentId);
         // this query is going to get you a list of events that can potentially be associated with this component
         $queryResult = mysqli_prepared_query($link,$query,"s",$connectionParams);
@@ -249,11 +252,19 @@ if(count($connectionsOpenToPass)==1){
     $returnDataJson = json_encode($returnData);
 
     $submissionBatchId = recordSuccessfulScreenTransfer($thisSessionId, $nextStartingComponentId, $thisContext, $submittingComponent);
-    /*
-    foreach($submission as $thisSubmittedEvent){
-        recordThisUserEvent($thisSubmittedEvent, $thisSessionId, $submissionBatchId);
+    $thisSubmissionIds = "";
+    for($c=0;$c<count($componentIdsSubmittedFor);$c++){
+        if($c <(count($componentIdsSubmittedFor)-1)){
+            $thisSubmissionIds=$thisSubmissionIds.$componentIdsSubmittedFor[$c].",";
+        }else{
+            $thisSubmissionIds=$thisSubmissionIds.$componentIdsSubmittedFor[$c];
+        }
     }
-    */
+    $expectedEvents = getEventsForComponent($thisSubmissionIds);
+    foreach($submission as $s){
+        $thisSubmittedEvent= get_object_vars($s);
+        recordThisUserEvent($thisSubmittedEvent, $thisSessionId, $submissionBatchId, $thisContext, $expectedEvents);
+    }
     echo($returnDataJson);
 }
 

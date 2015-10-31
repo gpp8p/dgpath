@@ -15,12 +15,19 @@ require_once '../server_mysqli/evtypes.php';
 require_once '../server_mysqli/recordUserEvents.php';
 
 
-function recordThisUserEvent($thisEvent, $thisSessionId){
+function recordThisUserEvent($thisEvent, $thisSessionId, $thisSubmissionBatchId, $thisContext, $expectedEvent){
 
     GLOBAL $documentViewed,$documentLinkClicked,$mcViewed,$mcCorrect,$mcAnswerX,$tfTrueSelected,$tfFalseSelected;
     GLOBAL $tfViewed,$tfCorrect,$tfClicked,$contextEntered,$contextExited,$entryDoorEntered,$exitDoorExited,$correctAnswer;
     GLOBAL $fibViewed,$correctFibAnswer,$fibAnswered,$fibResponse,$componentViewed,$tfAnswer,$scoreTotalMatched, $linkTransfer;
 
+    $thisExpectedEventKey = $thisEvent['elementId']."-".$thisEvent['type'];
+    $thisExpectedEventArray = $expectedEvent[$thisExpectedEventKey];
+
+    $thisContextId = $thisContext;
+
+
+    return;
 }
 
 function recordSuccessfulScreenTransfer($thisSessionId, $nextComponentId, $thisContext, $submittingComponent){
@@ -174,4 +181,29 @@ function getTraversalId($sessionId){
     }
     return array($thisTraversalId, $thisUserId);
 
+}
+
+function getEventsForComponent($componentIds){
+    GLOBAL $link;
+    $componentEventsQuery = "SELECT * from dgpath_events where component_id IN (".$componentIds.")";
+    $eventsParams = array($componentIds);
+    $eventsFound = false;
+    $eventsForThisComponent = array();
+    $queryResult = mysqli_prepared_query($link,$componentEventsQuery,"s",$eventsParams);
+    $eventsFound=false;
+    foreach($queryResult as $row){
+        $eventsFound=true;
+        $eventKey = $row[elementId]."-".$row['event_type'];
+        if($eventsForThisComponent[$eventKey]==null){
+            $eventsForThisComponent[$eventKey]=array($row);
+        }else{
+            array_push($eventsForThisComponent[$eventKey], $row);
+        }
+    }
+    if($eventsFound){
+        return $eventsForThisComponent;
+    }else{
+        header('HTTP/1.0 400 session problem - events not found');
+        exit;
+    }
 }
