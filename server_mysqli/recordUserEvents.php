@@ -21,8 +21,42 @@ function recordThisUserEvent($thisEvent, $thisSessionId, $thisSubmissionBatchId,
     GLOBAL $tfViewed,$tfCorrect,$tfClicked,$contextEntered,$contextExited,$entryDoorEntered,$exitDoorExited,$correctAnswer;
     GLOBAL $fibViewed,$correctFibAnswer,$fibAnswered,$fibResponse,$componentViewed,$tfAnswer,$scoreTotalMatched, $linkTransfer;
 
+    $thisContextId = $thisContext;
+    $thisTraversalQueryResult = getTraversalId(session_id());
+    $thisTraversalId = $thisTraversalQueryResult[0];
+    $thisUserId = $thisTraversalQueryResult[1];
+    $projectQueryResult = getProjectFromContext($thisContextId);
+    $thisProjectId = $projectQueryResult[0];
+    $thisProjectTitle = $projectQueryResult[1];
+
+
     $thisExpectedEventKey = $thisEvent['elementId']."-".$thisEvent['type'];
     $thisExpectedEventArray = $expectedEvent[$thisExpectedEventKey];
+    if($thisExpectedEventArray!=null){
+        foreach($thisExpectedEventArray as $thisExpectedEvent){
+            $thisEventType = $thisEvent['type'];
+            switch($thisEventType){
+                case $mcAnswerX:
+                    if($thisEvent['data']==$thisExpectedEvent['sub_param']){
+                        $thisUserDetail = $_SESSION['eid']." selected multiple choice ".$thisExpectedEvent['label']." at:".strftime("%F %T");
+                        $correctMcEventKey = $thisEvent['elementId']."-".$mcCorrect;
+                        $correctMcEventArray = $expectedEvent[$correctMcEventKey];
+                        if($correctMcEventArray!=null){
+                            foreach($correctMcEventArray as $correctEvent){
+                                if($correctEvent['sub_param']==$thisEvent['data']){
+                                    $thisUserDetail = $thisUserDetail." CORRECT!";
+                                    $answerCorrect = 1;
+                                }else{
+                                    $thisUserDetail = $thisUserDetail." INCORRECT - the correct answer was: ".$correctEvent['label'];
+                                    $answerCorrect = 0;
+                                }
+                                $thisDetailArray = array("msg"=>$thisUserDetail, "correct"=>$answerCorrect);
+                            }
+                        }
+                    }
+            }
+        }
+    }
 
     $thisContextId = $thisContext;
 
