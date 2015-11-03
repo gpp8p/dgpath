@@ -20,6 +20,9 @@ function recordThisUserEvent($thisEvent, $thisSessionId, $thisSubmissionBatchId,
     GLOBAL $documentViewed,$documentLinkClicked,$mcViewed,$mcCorrect,$mcAnswerX,$tfTrueSelected,$tfFalseSelected;
     GLOBAL $tfViewed,$tfCorrect,$tfClicked,$contextEntered,$contextExited,$entryDoorEntered,$exitDoorExited,$correctAnswer;
     GLOBAL $fibViewed,$correctFibAnswer,$fibAnswered,$fibResponse,$componentViewed,$tfAnswer,$scoreTotalMatched, $linkTransfer;
+    GLOBAL $user_response_mc, $user_response_tf, $user_response_fib, $high, $medium, $lowMedium, $low, $veryLow, $archive;
+    GLOBAL $awaitingAction, $actedUpon, $infoKeepVisible, $notCurrentlyRelevent, $secondaryInstructorRole;
+    GLOBAL $link;
 
     $thisContextId = $thisContext;
     $thisTraversalQueryResult = getTraversalId(session_id());
@@ -32,33 +35,51 @@ function recordThisUserEvent($thisEvent, $thisSessionId, $thisSubmissionBatchId,
 
     $thisExpectedEventKey = $thisEvent['elementId']."-".$thisEvent['type'];
     $thisExpectedEventArray = $expectedEvent[$thisExpectedEventKey];
+    $thisComponentId = $thisEvent['componentId'];
     if($thisExpectedEventArray!=null){
         foreach($thisExpectedEventArray as $thisExpectedEvent){
             $thisEventType = $thisEvent['type'];
             switch($thisEventType){
                 case $mcAnswerX:
                     if($thisEvent['data']==$thisExpectedEvent['sub_param']){
-                        $thisUserDetail = $_SESSION['eid']." selected multiple choice ".$thisExpectedEvent['label']." at:".strftime("%F %T");
+                        $thisUserDetail = $_SESSION['eid']." selected MC ".$thisExpectedEvent['label'];
                         $correctMcEventKey = $thisEvent['elementId']."-".$mcCorrect;
                         $correctMcEventArray = $expectedEvent[$correctMcEventKey];
                         if($correctMcEventArray!=null){
                             foreach($correctMcEventArray as $correctEvent){
                                 if($correctEvent['sub_param']==$thisEvent['data']){
-                                    $thisUserDetail = $thisUserDetail." CORRECT!";
+                                    $thisUserDetail = $thisUserDetail."- CORRECT!";
                                     $answerCorrect = 1;
                                 }else{
-                                    $thisUserDetail = $thisUserDetail." INCORRECT - the correct answer was: ".$correctEvent['label'];
+                                    $thisUserDetail = $thisUserDetail."- INCORRECT - ".$correctEvent['label'];
                                     $answerCorrect = 0;
                                 }
                                 $thisDetailArray = array("msg"=>$thisUserDetail, "correct"=>$answerCorrect);
+                                $thisDetail = json_encode($thisDetailArray);
+                                $logEventType = $user_response_mc;
+                                $thisPriority = $medium;
+                                $thisStatus = $infoKeepVisible;
+                                $thisAttenTo = $secondaryInstructorRole;
+
                             }
                         }
                     }
+                break;
+
             }
         }
     }
+    $logEventQuery = "INSERT into dgpath_user_events (component_id, user_id, detail, event_type, project_id, priority, status, submission_batch_id, traversal_id, atten_to, context_id) values (?,?,?,?,?,?,?,?,?,?,?)";
+    if ($stmt = mysqli_prepare($link, $logEventQuery)) {
 
-    $thisContextId = $thisContext;
+        mysqli_stmt_bind_param($stmt, "sssssssssss",$thisComponentId, $thisUserId, $thisDetail, $thisEventType ,$thisProjectId, $thisPriority, $thisStatus, $thisSubmissionBatchId, $thisTraversalId, $thisAttenTo, $thisContextId );
+        mysqli_stmt_execute($stmt);
+        if(mysqli_stmt_affected_rows($stmt)==0){
+            header('HTTP/1.0 400 Nothing saved - agent_traversal insert');
+            exit;
+        }
+    }
+
 
 
     return;
