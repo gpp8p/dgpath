@@ -24,6 +24,8 @@ $findComponentQuery = $findComponentQuery."where dgpath_component.id = ?";
 
 $user_events_query = "select count(*) as count from dgpath_user_events where component_id = ?";
 
+$user_events_delete = "DELETE from dgpath_user_events where component_id = ?";
+
 $thisComponentId = $_POST['componentId'];
 $fdVal = $_POST['forceDelete'];
 $forceDelete;
@@ -65,6 +67,7 @@ if($componentFound && $thisComponentType=="subcontext"){
 }
 
 if($forceDelete) {
+
     foreach ($traversalResults as $thisContext) {
         if ($stmt = mysqli_prepare($link, $deleteContextQuery)) {
             mysqli_stmt_bind_param($stmt, "s", $thisContext);
@@ -112,7 +115,7 @@ function traverseContext($componentQuery,  $link, &$results, $contextId, $doDele
 }
 
 function deleteOneComponent($componentId, $link, $forceDelete){
-    global $user_events_query;
+    global $user_events_query, $user_events_delete;
 
     $params = array($componentId);
     $user_events_queryResult = mysqli_prepared_query($link,$user_events_query,"s",$params);
@@ -134,6 +137,18 @@ function deleteOneComponent($componentId, $link, $forceDelete){
 
     if($forceDelete){
         $globalResult = deleteThisComponent($componentId, $link);
+        if ($stmt = mysqli_prepare($link, $user_events_delete)) {
+            mysqli_stmt_bind_param($stmt, "s", $componentId);
+            $result = mysqli_stmt_execute($stmt);
+            if (!$result) {
+//                mysqli_rollback($link);
+                header('HTTP/1.0 400 query failed - user events delete');
+                exit;
+            }
+        } else {
+            header('HTTP/1.0 400 bad query - context delete');
+            exit;
+        }
         $returnDataJson = json_encode($globalResult);
 //        echo($returnDataJson);
         return;

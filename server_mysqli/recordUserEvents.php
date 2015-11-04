@@ -42,19 +42,20 @@ function recordThisUserEvent($thisEvent, $thisSessionId, $thisSubmissionBatchId,
             switch($thisEventType){
                 case $mcAnswerX:
                     if($thisEvent['data']==$thisExpectedEvent['sub_param']){
-                        $thisUserDetail = $_SESSION['eid']." selected MC ".$thisExpectedEvent['label'];
+                        $userResponse = $thisExpectedEvent['label'];
                         $correctMcEventKey = $thisEvent['elementId']."-".$mcCorrect;
                         $correctMcEventArray = $expectedEvent[$correctMcEventKey];
                         if($correctMcEventArray!=null){
                             foreach($correctMcEventArray as $correctEvent){
                                 if($correctEvent['sub_param']==$thisEvent['data']){
-                                    $thisUserDetail = $thisUserDetail."- CORRECT!";
                                     $answerCorrect = 1;
+                                    $thisCorrectAnswer = "";
                                 }else{
-                                    $thisUserDetail = $thisUserDetail."- INCORRECT - ".$correctEvent['label'];
                                     $answerCorrect = 0;
+                                    $thisCorrectAnswer = $correctEvent['label'];
                                 }
-                                $thisDetailArray = array("msg"=>$thisUserDetail, "correct"=>$answerCorrect);
+                                $responseData = $thisEvent['data'];
+                                $thisDetailArray = array("response"=>$userResponse, "correct"=>$answerCorrect, "correctAnswer"=>$thisCorrectAnswer, "responseData"=>$responseData);
                                 $thisDetail = json_encode($thisDetailArray);
                                 $logEventType = $user_response_mc;
                                 $thisPriority = $medium;
