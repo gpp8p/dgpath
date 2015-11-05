@@ -22,7 +22,7 @@ function recordThisUserEvent($thisEvent, $thisSessionId, $thisSubmissionBatchId,
     GLOBAL $fibViewed,$correctFibAnswer,$fibAnswered,$fibResponse,$componentViewed,$tfAnswer,$scoreTotalMatched, $linkTransfer;
     GLOBAL $user_response_mc, $user_response_tf, $user_response_fib, $high, $medium, $lowMedium, $low, $veryLow, $archive;
     GLOBAL $awaitingAction, $actedUpon, $infoKeepVisible, $notCurrentlyRelevent, $secondaryInstructorRole;
-    GLOBAL $link;
+    GLOBAL $link, $mcClicked, $no_response;
 
     $thisContextId = $thisContext;
     $thisTraversalQueryResult = getTraversalId(session_id());
@@ -103,6 +103,28 @@ function recordThisUserEvent($thisEvent, $thisSessionId, $thisSubmissionBatchId,
                     $thisPriority = $medium;
                     $thisStatus = $infoKeepVisible;
                     $thisAttenTo = $secondaryInstructorRole;
+                    break;
+                case $componentViewed:
+                    $thisDetailArray = array();
+                    $thisDetail = json_encode($thisDetailArray);
+                    $logEventType = $componentViewed;
+                    $thisPriority = $low;
+                    $thisStatus = $infoKeepVisible;
+                    $thisAttenTo = $secondaryInstructorRole;
+                    break;
+                case $mcClicked:
+                case $fibAnswered:
+                case $tfClicked:
+                    if($thisEvent['data']!="0"){
+                        $userResponse = "No response";
+                        $thisDetailArray = array("response"=>$userResponse,"responseData"=>$thisEvent['elementId'] );
+                        $thisDetail = json_encode($thisDetailArray);
+                        $logEventType = $no_response;
+                        $thisPriority = $medium;
+                        $thisStatus = $infoKeepVisible;
+                        $thisAttenTo = $secondaryInstructorRole;
+                    }
+                    break;
 
             }
         }

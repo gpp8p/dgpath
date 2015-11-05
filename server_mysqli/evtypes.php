@@ -38,6 +38,7 @@ $authorSelect=71;
 $user_response_mc = 200;
 $user_response_tf = 201;
 $user_response_fib = 202;
+$no_response = 203;
 
 $entryEvents = "(".$documentViewed.",".$mcViewed.",".$tfViewed.",".$contextEntered.",".$entryDoorEntered.")";
 $responseEvents = array($fibAnswered,$tfClicked,$mcClicked);
