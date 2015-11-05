@@ -66,6 +66,43 @@ function recordThisUserEvent($thisEvent, $thisSessionId, $thisSubmissionBatchId,
                         }
                     }
                 break;
+                case $fibResponse:
+                    $correctFibResponseKey = $thisEvent['elementId']."-".$correctFibAnswer;
+                    $expectedCorrectFibResponse = $expectedEvent[$correctFibResponseKey];
+                    if($thisEvent['data']==$expectedCorrectFibResponse[0]['sub_param']){
+                        $answerCorrect = 1;
+                        $thisCorrectAnswer = "";
+                    }else{
+                        $answerCorrect = 0;
+                        $thisCorrectAnswer = $expectedCorrectFibResponse[0]['sub_param'];
+                    }
+                    $responseData = $thisEvent['elementId'];
+                    $userResponse = $thisEvent['data'];
+                    $thisDetailArray = array("response"=>$userResponse, "correct"=>$answerCorrect, "correctAnswer"=>$thisCorrectAnswer, "responseData"=>$responseData);
+                    $thisDetail = json_encode($thisDetailArray);
+                    $logEventType = $user_response_fib;
+                    $thisPriority = $medium;
+                    $thisStatus = $infoKeepVisible;
+                    $thisAttenTo = $secondaryInstructorRole;
+
+                    break;
+                case $tfAnswer:
+                    $expectedTfEvent = $thisExpectedEvent;
+                    if($expectedTfEvent['sub_param']==$thisEvent['data']){
+                        $answerCorrect = 1;
+                        $thisCorrectAnswer = "";
+                    }else{
+                        $answerCorrect = 0;
+                        $thisCorrectAnswer = $expectedTfEvent['sub_param'];
+                    }
+                    $responseData = $thisEvent['elementId'];
+                    $userResponse = $thisEvent['data'];
+                    $thisDetailArray = array("response"=>$userResponse, "correct"=>$answerCorrect, "correctAnswer"=>$thisCorrectAnswer, "responseData"=>$responseData);
+                    $thisDetail = json_encode($thisDetailArray);
+                    $logEventType = $user_response_tf;
+                    $thisPriority = $medium;
+                    $thisStatus = $infoKeepVisible;
+                    $thisAttenTo = $secondaryInstructorRole;
 
             }
         }
@@ -73,7 +110,7 @@ function recordThisUserEvent($thisEvent, $thisSessionId, $thisSubmissionBatchId,
     $logEventQuery = "INSERT into dgpath_user_events (component_id, user_id, detail, event_type, project_id, priority, status, submission_batch_id, traversal_id, atten_to, context_id) values (?,?,?,?,?,?,?,?,?,?,?)";
     if ($stmt = mysqli_prepare($link, $logEventQuery)) {
 
-        mysqli_stmt_bind_param($stmt, "sssssssssss",$thisComponentId, $thisUserId, $thisDetail, $thisEventType ,$thisProjectId, $thisPriority, $thisStatus, $thisSubmissionBatchId, $thisTraversalId, $thisAttenTo, $thisContextId );
+        mysqli_stmt_bind_param($stmt, "sssssssssss",$thisComponentId, $thisUserId, $thisDetail, $logEventType ,$thisProjectId, $thisPriority, $thisStatus, $thisSubmissionBatchId, $thisTraversalId, $thisAttenTo, $thisContextId );
         mysqli_stmt_execute($stmt);
         if(mysqli_stmt_affected_rows($stmt)==0){
             header('HTTP/1.0 400 Nothing saved - agent_traversal insert');
