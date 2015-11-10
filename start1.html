@@ -68,6 +68,8 @@
     <script src="./lib/my_uploads1.js"></script>
     <script src="./lib/vObj.js"></script>
 
+    <script src="./lib/dashBoard.js"></script>
+
 
 
 
@@ -134,6 +136,7 @@
             $("#alertPopup").hide();
             $("#tabHeader").hide();
             $("#previewDiv").hide();
+            $("#dashboardDiv").hide();
             isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
             isFirefox = typeof InstallTrigger !== 'undefined';   // Firefox 1.0+
             isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
@@ -221,6 +224,26 @@
     </div>
 -->
     <div id="contentArea" class="contentAreaCss">
+
+    </div>
+</div>
+<div id="dashboardDiv">
+    <div id="dashBoardMapArea" >
+
+    </div>
+    <div id="dashBoardButtonArea" >
+        <div id="dbBorder1">
+
+        </div>
+        <div id="dbButtons" >
+
+        </div>
+        <div id="dbBorder2" >
+
+        </div>
+
+    </div>
+    <div id="dashBoardListArea" >
 
     </div>
 </div>

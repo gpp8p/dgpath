@@ -35,6 +35,30 @@ html, body {
     text-indent: 0;
 }
 
+.buttonTableCss {
+    border-collapse: separate;
+    border-spacing: 5px;
+    box-sizing: border-box;
+    display: table;
+    margin-bottom: 0;
+    margin-top: 0;
+    text-indent: 0;
+    background-color: #FF9F28;
+}
+
+.buttonCss {
+    background-color: #030bda;
+    color: #feff18;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 5px;
+    border-radius: 3px 3px 3px 3px;
+    font-size: x-large;
+}
+
+.blankAreaCss {
+    background-color: #FF9F28;
+}
+
 select {
     -moz-appearance:button;
     -webkit-appearance:button;
