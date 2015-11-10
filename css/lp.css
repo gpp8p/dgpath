@@ -52,7 +52,16 @@ html, body {
     font-family: Arial, Helvetica, sans-serif;
     padding: 5px;
     border-radius: 3px 3px 3px 3px;
-    font-size: x-large;
+    font-size: large;
+}
+
+.buttonMenuCss {
+    background-color: #BC7065;
+    color: #feff18;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 5px;
+    border-radius: 3px 3px 3px 3px;
+    font-size: large;
 }
 
 .blankAreaCss {
