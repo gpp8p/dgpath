@@ -142,6 +142,15 @@
         "connectionConfigurationPrompt": "Do you want to add this to what the user sees and use default settings ?",
         "pathTitleBar": "This path"
     },
+    "dashBoard":{
+        "participants":"Participants",
+        "notifications":"Notifications",
+        "statistics":"Statistics",
+        "addParticipant":"Add Participant",
+        "addLti":"Add LTI Access",
+        "mostRecent":"Most Recent Activ."
+
+    },
     "libraryControlBar":{
         "openFolderLabel":"Open",
         "openCollectionLabel":"Open",

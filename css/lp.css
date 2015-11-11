@@ -47,12 +47,24 @@ html, body {
 }
 
 .buttonCss {
-    background-color: #030bda;
     color: #feff18;
     font-family: Arial, Helvetica, sans-serif;
     padding: 5px;
     border-radius: 3px 3px 3px 3px;
     font-size: large;
+}
+
+.buttonSelectedCss {
+    background-color: #BC7065;
+}
+
+.buttonNotSelectedCss {
+    background-color: #030bda;
+}
+
+.buttonCss:hover {
+    background-color: #08ae13;
+    color: #feff18;
 }
 
 .buttonMenuCss {
@@ -62,6 +74,11 @@ html, body {
     padding: 5px;
     border-radius: 3px 3px 3px 3px;
     font-size: large;
+}
+
+.buttonMenuCss:hover {
+    background-color: #7b7cbc;
+    color: #feff18;
 }
 
 .blankAreaCss {
