@@ -85,6 +85,23 @@ html, body {
     background-color: #FF9F28;
 }
 
+.dashDialog {
+    position: absolute;
+    border-radius: 5px 5px 5px 5px;
+    display: block;
+    color: #000000;
+    font-size:12px;
+    font-weight:bold;
+    font-family: "Arial";
+    padding: 12px;
+    text-align: left;
+    border: 2px solid;
+    border-radius: 15px 15px 15px 15px;
+    border-color:red;
+    background-color: #ccc2aa;
+    box-shadow: 10px 10px 5px #888888;
+}
+
 select {
     -moz-appearance:button;
     -webkit-appearance:button;

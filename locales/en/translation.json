@@ -148,7 +148,22 @@
         "statistics":"Statistics",
         "addParticipant":"Add Participant",
         "addLti":"Add LTI Access",
-        "mostRecent":"Most Recent Activ."
+        "mostRecent":"Most Recent Activ.",
+        "firstNameLabel":"First Name:",
+        "lastNameLabel":"Last Name:",
+        "eidLabel":"Login ID:",
+        "passwordLabel":"Password:",
+        "passwordConfirmLabel":"Confirm Password:",
+        "userTypeLabel":"User Type:",
+        "pleaseEnterLabel":"Select User Type",
+        "courseDesignerOptionLabel":"Course Designer",
+        "instructorOptionLabel":"Instructor",
+        "secondaryInstructorOptionLabel":"Secondary Instructor",
+        "studentOptionLabel":"Student",
+        "guestOptionLabel":"Guest",
+        "newUserSaveButtonLabel":"Create This User",
+        "newUserCancelButtonLabel":"Cancel",
+        "newUserEntryTitle": "Create New User"
 
     },
     "libraryControlBar":{
