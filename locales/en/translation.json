@@ -152,6 +152,7 @@
         "firstNameLabel":"First Name:",
         "lastNameLabel":"Last Name:",
         "eidLabel":"Login ID:",
+        "emailLabel": "Email:",
         "passwordLabel":"Password:",
         "passwordConfirmLabel":"Confirm Password:",
         "userTypeLabel":"User Type:",
@@ -163,7 +164,10 @@
         "guestOptionLabel":"Guest",
         "newUserSaveButtonLabel":"Create This User",
         "newUserCancelButtonLabel":"Cancel",
-        "newUserEntryTitle": "Create New User"
+        "newUserEntryTitle": "Create New User",
+        "passwordNoMatch":"Confirm Password and Password must Match!",
+        "entryRequired":"These fields are needed:",
+        "dummy":"dummy"
 
     },
     "libraryControlBar":{
