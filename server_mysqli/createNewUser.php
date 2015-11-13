@@ -25,6 +25,19 @@ $email = $_POST['email'];
 $password = $_POST['password'];
 $userType = $_POST['userType'];
 
+$userEidQuery = "SELECT id, user_eid, password, last_name, first_name, email from dgpath_user where user_eid = ?";
+$userInsertQuery = "INSERT into dgpath_user (user_eid, password, last_name, first_name, email) values (?,?,?,?,?)";
+$groupInsertForUserQuery = "INSERT into dgpath_group (label) values (?)";
+$isUserInCourseQuery = "select dgpath_group.id, dgpath_group.label from dgpath_user, dgpath_user_in_group, dgpath_group, dgpath_cando_project, dgpath_permission where ";
+$isUserInCourseQuery = $isUserInCourseQuery."dgpath_group.id = dgpath_user_in_group.group_id ";
+$isUserInCourseQuery = $isUserInCourseQuery."and dgpath_user_in_group.user_id = dgpath_user.id ";
+$isUserInCourseQuery = $isUserInCourseQuery."and dgpath_user.user_eid = ? ";
+$isUserInCourseQuery = $isUserInCourseQuery."and dgpath_cando_project.group_id = dgpath_group.id ";
+$isUserInCourseQuery = $isUserInCourseQuery."and dgpath_cando_project.project_id = ? ";
+$isUserInCourseQuery = $isUserInCourseQuery."and dgpath_cando_project.permission_id = dgpath_permission.id ";
+$isUserInCourseQuery = $isUserInCourseQuery."and dgpath_permission.label = ?";
+
+
 
 
 
