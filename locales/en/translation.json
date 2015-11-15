@@ -167,6 +167,8 @@
         "newUserEntryTitle": "Create New User",
         "passwordNoMatch":"Confirm Password and Password must Match!",
         "entryRequired":"These fields are needed:",
+        "duplicateUser":"That Id is currently taken.  Please enter another one.",
+        "userCreated":" was created successfully and added to this course.",
         "dummy":"dummy"
 
     },
