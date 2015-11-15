@@ -34,8 +34,20 @@ drop table if exists dgpath_group;
 create table dgpath_group(
     id              MEDIUMINT NOT NULL AUTO_INCREMENT,
     label           VARCHAR(128),
+    group_type      MEDIUMINT NOT NULL,
     PRIMARY KEY (id)
 );
+
+drop table if exists dgpath_group_type;
+create table dgpath_group_type (
+  id              MEDIUMINT NOT NULL AUTO_INCREMENT,
+  label           VARCHAR(128),
+  PRIMARY KEY (id)
+);
+
+insert into dgpath_group_type (label) values("homegroup");
+insert into dgpath_group_type (label) values("navgroup");
+insert into dgpath_group_type (label) values("permgroup");
 
 -- represents membership of a user in a group
 drop table if exists dgpath_user_in_group;
