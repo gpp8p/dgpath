@@ -30,7 +30,7 @@ $userEidQuery = "SELECT id, user_eid, password, last_name, first_name, email fro
 
 $userInsertQuery = "INSERT into dgpath_user (user_eid, password, last_name, first_name, email) values (?,?,?,?,?)";
 
-$groupInsertForUserQuery = "INSERT into dgpath_group (label, grpoup_type) values (?,?)";
+$groupInsertForUserQuery = "INSERT into dgpath_group (label, group_type) values (?,?)";
 $homeGroupLabel = "homegroup";
 $homeGroupQuery = "SELECT id from dgpath_group_type where label = ?";
 $userHomeGroupQuery = "select dgpath_group.id,dgpath_group.label from dgpath_user_in_group, dgpath_group where dgpath_user_in_group.user_id = ? and dgpath_user_in_group.group_id = dgpath_group.id and dgpath_group.group_type=?";
@@ -181,7 +181,7 @@ if(!$existingEid){
     }
 }
 foreach($addThesePermissions as $addThisPermission){
-    $queryParams = array($thisPermission);
+    $queryParams = array($addThisPermission[0]);
     $queryResult = mysqli_prepared_query($link,$lookupPermissionQuery,"s",$queryParams);
     $thisPermissionFound = false;
     foreach($queryResult as $thisQueryResult){
