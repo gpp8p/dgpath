@@ -23,7 +23,8 @@ if(!isset($_SESSION['username'])){
     $userId = $_SESSION['username'];
     $userActivityTypes = $_POST['activityTypes'];
 
-    $userActivityQuery = "select id, event_time, detail, event_type, user_id, context_id, traversal_id from dgpath_user_events where event_type in (".$userActivityTypes.") and event_time in (select max(event_time) from dgpath_user_events group by user_id)";
+    $userActivityQuery = "select dgpath_user_events.id as id, dgpath_user_events.event_time as event_time, dgpath_user_events.detail as detail, dgpath_user_events.event_type as event_type, dgpath_user_events.user_id as user_id, dgpath_user_events.context_id as context_id, dgpath_user_events.traversal_id as traversal_id, dgpath_user.first_name as first_name, dgpath_user.last_name as last_name from dgpath_user_events, dgpath_user where event_type in (23,70,72) and event_time in (select max(event_time) from dgpath_user_events group by user_id) and dgpath_user.id = dgpath_user_events.user_id";
+
     $userActivityQueryParams = array();
     $userActivityList = array();
     $queryResult = mysqli_prepared_query($link,$userActivityQuery,"",$userActivityQueryParams);

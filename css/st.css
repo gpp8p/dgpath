@@ -1,0 +1,23 @@
+table.scrollTable td {
+    background-color: #0de9f9;
+    border-top: 1px solid #eee;
+    border-right: 1px solid #eee;
+    padding: 0.1em 0.3em;
+    font-family: Arial, Verdana, sans-serif;
+    font-size: 0.9em;
+    color: #931109;
+}
+
+table.scrollTable th {
+    background-color: #0de9f9;
+    border-right: 0;
+    color: #f94e13;
+    font-family: Arial, Verdana, sans-serif;
+    font-size: 12pt;
+    horiz-align: left;
+
+}
+
+table.scrollTable {
+    width:100%;
+}

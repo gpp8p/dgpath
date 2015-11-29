@@ -173,6 +173,9 @@
         "activityTimeLabel":"When:",
         "activityUserLabel":"Who:",
         "activityDetailLabel":"Detail:",
+        "linkTransfer":"Path Transfer",
+        "startView":"View",
+        "userLoggedIn":"Log-In",
         "dummy":"dummy"
 
     },
