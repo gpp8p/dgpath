@@ -169,6 +169,10 @@
         "entryRequired":"These fields are needed:",
         "duplicateUser":"That Id is currently taken.  Please enter another one.",
         "userCreated":" was created successfully and added to this course.",
+        "activityTypeLabel":"What Happened:",
+        "activityTimeLabel":"When:",
+        "activityUserLabel":"Who:",
+        "activityDetailLabel":"Detail:",
         "dummy":"dummy"
 
     },

@@ -34,6 +34,7 @@ $componentsView=24;
 $mcClicked=25;
 $linkTransfer= 70;
 $authorSelect=71;
+$startView = 72;
 
 $user_response_mc = 200;
 $user_response_tf = 201;
