@@ -8,17 +8,6 @@ table.scrollTable td {
     color: #931109;
 }
 
-table.scrollTable td:hover {
-    background-color: #0323f9;
-    border-top: 1px solid #eee;
-    border-right: 1px solid #eee;
-    padding: 0.1em 0.3em;
-    font-family: Arial, Verdana, sans-serif;
-    font-size: 0.9em;
-    color: #fffa08;
-}
-
-
 
 table.scrollTable th {
     background-color: #0de9f9;
