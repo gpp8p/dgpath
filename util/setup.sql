@@ -196,6 +196,7 @@ create table dgpath_context (
     title        varchar(40),
     project       MEDIUMINT NOT NULL,
     parent        MEDIUMINT NOT NULL,
+    context_parent MEDIUMINT,
     topcontext    BOOLEAN,
     FOREIGN KEY(project) references dgpath_project(id),
     PRIMARY KEY (id)
