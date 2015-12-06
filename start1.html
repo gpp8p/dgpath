@@ -111,6 +111,7 @@
             $("#tabPart").attr("width", 560);
             $("#studioTab").on("click", function(){
                 selectStudioTab();
+                reloadAllComponents($("#subContext").val(),true);
             });
             $("#previewTab").on("click", function(){
                 selectPreviewTab();
@@ -218,7 +219,7 @@
 </div>
 <div id="alertPopup" class="alertCss">
 </div>
-<div id=""errorDialog">
+<div id="errorDialog">
 </div>
 <div id="previewDiv" class="previewDivCss">
 <!--    <div id = "navButton" class="navButtonCss">
