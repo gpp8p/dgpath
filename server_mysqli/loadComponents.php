@@ -6,9 +6,13 @@
  * Time: 6:46 PM
  * To change this template use File | Settings | File Templates.
  */
-
-
 function loadComponents($contextId, $link){
+    $thisComponentsAndEventsArray = loadComponentsArray($contextId, $link);
+    $jsonComponentsList = json_encode($thisComponentsAndEventsArray);
+    return $jsonComponentsList;
+}
+
+function loadComponentsArray($contextId, $link){
 
 $query=<<<EOQ
 select dgpath_component.id, dgpath_component.title, dgpath_component.content, dgpath_component.type, dgpath_component.x, dgpath_component.y, dgpath_component.context, dgpath_events.component_id, dgpath_events.label, dgpath_events.event_type, dgpath_events.sub_param, dgpath_events.id as eid
@@ -169,8 +173,7 @@ EOQ2;
         }
     }
     $results = array($allComponents, $contextInfo);
-    $jsonComponentsList = json_encode($results);
-    return $jsonComponentsList;
+    return $results;
 
 
 }
