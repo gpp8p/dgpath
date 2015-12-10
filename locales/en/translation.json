@@ -176,6 +176,7 @@
         "linkTransfer":"Path Transfer",
         "startView":"View",
         "userLoggedIn":"Log-In",
+        "authorSelect":"Entered Course",
         "userViewChoiceProgressMap": "Progress Map",
         "userViewChoiceProgressList": "Progress List",
         "userViewChoiceMessage": "Message To Student",
