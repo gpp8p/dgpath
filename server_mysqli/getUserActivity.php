@@ -28,7 +28,7 @@ if(!isset($_SESSION['username'])){
 $userActivityQuery=<<<EOQ
  select * from (
  select dgpath_user_events.id as id, dgpath_user_events.component_id as component_id, dgpath_user_events.event_time as event_time, dgpath_user_events.detail as detail, dgpath_user_events.event_type as event_type, dgpath_user_events.user_id as user_id, dgpath_user_events.context_id as context_id, dgpath_user_events.traversal_id as traversal_id, dgpath_user.first_name as first_name, dgpath_user.last_name as last_name from dgpath_user_events, dgpath_user
- where dgpath_user.id = dgpath_user_events.user_id order by event_time desc)
+ where dgpath_user.id = dgpath_user_events.user_id and dgpath_user_events.event_type != 23 order by event_time desc)
  as t1 group by user_id;
 EOQ;
 
