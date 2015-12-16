@@ -34,7 +34,8 @@ if(!isset($_SESSION['username'])){
         $thisContext = $thisActivity['context_id'];
         $thisLastName = $thisActivity['last_name'];
         $thisFirstName = $thisActivity['first_name'];
-        $thisActivityContext = array("context"=>$thisContext, "firstName"=>$thisFirstName, "lastName"=>$thisLastName);
+        $thisUserId = $thisActivity['user_id'];
+        $thisActivityContext = array("context"=>$thisContext, "firstName"=>$thisFirstName, "lastName"=>$thisLastName, "userId"=>$thisUserId);
     }
     if(!$eventFound){
         header('HTTP/1.0 400 user event not found');
