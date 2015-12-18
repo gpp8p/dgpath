@@ -30,7 +30,7 @@ $combinedComponentArray = array();
 foreach($componentArray as  $thisComponent){
     $thisComponentId = $thisComponent['id'];
     $userActivityQueryParams = array($thisComponentId, $userId);
-    $queryResult = mysqli_prepared_query($link,$userEventInfoQuery,"s",$userActivityQueryParams);
+    $queryResult = mysqli_prepared_query($link,$userEventInfoQuery,"ss",$userActivityQueryParams);
     $eventsForThisComponent = array();
     foreach($queryResult as $userEventFound){
         array_push($eventsForThisComponent, $userEventFound);
@@ -40,4 +40,4 @@ foreach($componentArray as  $thisComponent){
 }
 $newCombinedComponentArray = array($combinedComponentArray,$componentLoadResult[1]);
 $jsonComponentsList = json_encode($newCombinedComponentArray);
-return $jsonComponentsList;
+echo($jsonComponentsList);
